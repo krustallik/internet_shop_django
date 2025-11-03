@@ -1,0 +1,16 @@
+<div class="sort-buttons">
+  {% with s=current_sort %}
+    <a class="sort-btn {% if s == 'new' %}active{% endif %}"
+       href="?sort=new{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Нові</a>
+    <a class="sort-btn {% if s == 'old' %}active{% endif %}"
+       href="?sort=old{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Старі</a>
+    <a class="sort-btn {% if s == 'popular' %}active{% endif %}"
+       href="?sort=popular{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Популярні</a>
+    <a class="sort-btn {% if s == 'price_low' %}active{% endif %}"
+       href="?sort=price_low{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Дешевші</a>
+    <a class="sort-btn {% if s == 'price_high' %}active{% endif %}"
+       href="?sort=price_high{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Дорожчі</a>
+    <a class="sort-btn {% if s == 'name' %}active{% endif %}"
+       href="?sort=name{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Назва</a>
+  {% endwith %}
+</div>

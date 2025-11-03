@@ -20,12 +20,8 @@
         <span>Додано: {{ product.created_at|date:"Y-m-d H:i" }}</span>
       </div>
       <div class="price">Ціна: <b>{{ product.price }} ₴</b></div>
-      {% if product.featured %}
-        <div class="featured-badge">Рекомендований</div>
-      {% endif %}
-
+      {% if product.featured %}<div class="featured-badge">Рекомендований</div>{% endif %}
       <div class="desc">{{ product.description|linebreaks }}</div>
-
       <div class="actions">
         <button class="btn">Додати до кошика</button>
         <a class="btn ghost" href="{% url 'main:product_list' %}">Повернутися до каталогу</a>
