@@ -3,7 +3,6 @@ from django.contrib import admin
 from django.utils.html import format_html
 from .models import Category, Product
 
-
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ("id", "name", "slug", "is_active", "image_tag")
@@ -21,27 +20,31 @@ class CategoryAdmin(admin.ModelAdmin):
             )
         return "—"
 
-
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = (
-        "id",
-        "name",
-        "category",
-        "price",
-        "is_available",
-        "featured",
-        "views",
-        "image_tag",
-    )
-    list_filter = ("category", "is_available", "featured", "created_at")
-    search_fields = ("name", "description")
+    list_display = ("id","name","category","price","is_available","featured","views","image_tag")
+    list_filter = ("category","is_available","featured","created_at")
+    search_fields = ("name","description")
     prepopulated_fields = {"slug": ("name",)}
-    list_editable = ("price", "is_available", "featured")
+    list_editable = ("price","is_available","featured")
     ordering = ("-created_at",)
 
+    fieldsets = (
+        ("Основна інформація", {
+            "fields": ("name","slug","category","image")
+        }),
+        ("Описи", {
+            "fields": ("description","detailed_description")  # ← CKEditor тут
+        }),
+        ("Ціни", {
+            "fields": ("price",)
+        }),
+        ("Налаштування", {
+            "fields": ("is_available","featured","views")
+        }),
+    )
+
     def get_queryset(self, request):
-        # оптимізація для списку
         qs = super().get_queryset(request)
         return qs.select_related("category")
 

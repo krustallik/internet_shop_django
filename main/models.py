@@ -1,7 +1,7 @@
 # main/models.py
 from django.db import models
 from django.urls import reverse
-
+from ckeditor_uploader.fields import RichTextUploadingField
 
 class Category(models.Model):
     name = models.CharField(max_length=100, db_index=True)
@@ -22,17 +22,22 @@ class Category(models.Model):
         return reverse("main:product_list_by_category", args=[self.slug])
 
 
+
+
+
 class Product(models.Model):
     category = models.ForeignKey(
-        Category,
-        on_delete=models.CASCADE,
-        related_name="products",
-        null=True,
-        blank=True,
+        'Category', on_delete=models.CASCADE, related_name='products',
+        null=True, blank=True
     )
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True)
     description = models.TextField()
+    # НОВЕ поле з форматуванням:
+    detailed_description = RichTextUploadingField(
+        blank=True,
+        help_text="Детальний опис товару з форматуванням (CKEditor)"
+    )
     price = models.DecimalField(max_digits=10, decimal_places=2)
     image = models.ImageField(upload_to="products/%Y/%m/%d", blank=True)
     views = models.IntegerField(default=0)
