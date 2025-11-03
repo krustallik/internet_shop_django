@@ -1,4 +1,6 @@
+
 {% extends 'main/base.html' %}
+{% load shop_filters shop_tags %}
 {% block title %}
   {% if search_query %}Пошук: {{ search_query }}
   {% elif category %}{{ category.name }}
@@ -16,19 +18,19 @@
   {% include 'main/components/sort_buttons.html' %}
 
   <div class="products-grid">
-    {% for p in products %}
-      {% include 'main/components/product_card.html' with p=p %}
-    {% empty %}
-      <p>
-        {% if search_query %}
-          За запитом «{{ search_query }}» нічого не знайдено.
-          <a href="{% url 'main:product_list' %}">Скинути пошук</a>
-        {% else %}
-          Немає товарів.
-        {% endif %}
-      </p>
-    {% endfor %}
-  </div>
+  {% for p in products %}
+    {% show_product_card p %}
+  {% empty %}
+    <p>
+      {% if search_query %}
+        За запитом «{{ search_query }}» нічого не знайдено.
+        <a href="{% url 'main:product_list' %}">Скинути пошук</a>
+      {% else %}
+        Немає товарів.
+      {% endif %}
+    </p>
+  {% endfor %}
+</div>
 
   {% include 'main/pagination.html' %}
 {% endblock %}

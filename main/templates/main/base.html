@@ -1,4 +1,6 @@
 {% load static %}
+{% load shop_tags %}
+
 <!doctype html>
 <html lang="uk">
 <head>
@@ -21,6 +23,7 @@
     </nav>
 
     <div class="auth-buttons">
+    <span class="hint">{% user_greeting %}</span>
       {% if user.is_authenticated %}
         {% if user.is_staff %}
           <a class="btn" href="{% url 'admin:index' %}">Адмінка</a>

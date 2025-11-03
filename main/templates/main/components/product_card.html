@@ -1,3 +1,4 @@
+{% load shop_filters %}
 <article class="product-card">
   {% if p.featured %}<span class="featured-badge">Рекомендований</span>{% endif %}
   <a href="{{ p.get_absolute_url }}" class="thumb">
@@ -9,13 +10,12 @@
   </a>
   <div class="info">
     <h3 class="name"><a href="{{ p.get_absolute_url }}">{{ p.name }}</a></h3>
-    <div class="price">{{ p.price }} ₴</div>
+    <div class="price">{{ p.price|currency }}</div>
     <p class="desc">{{ p.description|truncatewords:15 }}</p>
     <div class="meta">
-      <span>Перегляди: {{ p.views }}</span>
-      {% if p.category %}
-        <span>Категорія: <a href="{{ p.category.get_absolute_url }}">{{ p.category.name }}</a></span>
-      {% endif %}
+      <span>Перегляди: {{ p.views|compact_number }}</span>
+      {% if p.created_at %}<span>Додано: {{ p.created_at|time_ago }}</span>{% endif %}
+      {% if p.category %}<span>Категорія: <a href="{{ p.category.get_absolute_url }}">{{ p.category.name }}</a></span>{% endif %}
     </div>
   </div>
 </article>
