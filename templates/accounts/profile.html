@@ -1,0 +1,15 @@
+{% extends 'main/base.html' %}
+{% block title %}Профіль — Магазин{% endblock %}
+{% block content %}
+<h1>Профіль</h1>
+<div class="card">
+  <p><b>Логін:</b> {{ user.username }}</p>
+  <p><b>Email:</b> {{ user.email|default:"Не вказано" }}</p>
+  <p><b>З нами з:</b> {{ user.date_joined|date:"Y-m-d H:i" }}</p>
+  <p><b>Останній вхід:</b> {{ user.last_login|date:"Y-m-d H:i" }}</p>
+</div>
+<div class="actions" style="margin-top:12px;">
+  <a class="btn" href="{% url 'main:product_list' %}">До товарів</a>
+  <a class="btn ghost" href="{% url 'accounts:logout' %}">Вийти</a>
+</div>
+{% endblock %}

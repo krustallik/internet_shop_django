@@ -1,0 +1,27 @@
+{% extends 'main/base.html' %}
+{% block title %}Вхід — Магазин{% endblock %}
+{% block content %}
+<h1>Вхід</h1>
+<form method="post" class="form">
+  {% csrf_token %}
+  {% if form.non_field_errors %}
+    <div class="error">{{ form.non_field_errors }}</div>
+  {% endif %}
+
+  <div>
+    <label>Логін</label>
+    {{ form.username }}
+    {% for e in form.username.errors %}<div class="error">{{ e }}</div>{% endfor %}
+  </div>
+  <div>
+    <label>Пароль</label>
+    {{ form.password }}
+    {% for e in form.password.errors %}<div class="error">{{ e }}</div>{% endfor %}
+  </div>
+
+  {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+
+  <button class="btn" type="submit">Увійти</button>
+  <a class="btn ghost" href="{% url 'accounts:register' %}">Реєстрація</a>
+</form>
+{% endblock %}

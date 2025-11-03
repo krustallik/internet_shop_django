@@ -1,0 +1,48 @@
+{% load static %}
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}Магазин{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="logo" href="{% url 'main:product_list' %}">Магазин</a>
+    <nav class="nav">
+      <a href="{% url 'main:product_list' %}">Усі товари</a>
+      {% if categories %}
+        {% for c in categories %}
+          <a href="{{ c.get_absolute_url }}">{{ c.name }}</a>
+        {% endfor %}
+      {% endif %}
+    </nav>
+
+    <div class="auth-buttons">
+      {% if user.is_authenticated %}
+        {% if user.is_staff %}
+          <a class="btn" href="{% url 'admin:index' %}">Адмінка</a>
+        {% endif %}
+        <a class="btn" href="{% url 'accounts:profile' %}">Профіль</a>
+        <a class="btn ghost" href="{% url 'accounts:logout' %}">Вийти</a>
+      {% else %}
+        <a class="btn" href="{% url 'accounts:login' %}">Вхід</a>
+        <a class="btn ghost" href="{% url 'accounts:register' %}">Реєстрація</a>
+      {% endif %}
+</div>
+
+
+  </div>
+</header>
+
+<main class="container">
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="site-footer">
+  <div class="container">© {{ now|date:"Y" }} Магазин</div>
+</footer>
+</body>
+</html>

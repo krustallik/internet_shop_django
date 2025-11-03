@@ -1,0 +1,47 @@
+{% extends 'main/base.html' %}
+{% block title %}{% if category %}{{ category.name }} — {% endif %}Каталог товарів{% endblock %}
+
+{% block content %}
+  <h1 class="page-title">
+    {% if category %}{{ category.name }}{% else %}Каталог товарів{% endif %}
+  </h1>
+
+  <div class="sort-buttons">
+    {% with s=current_sort %}
+      <a class="sort-btn {% if s == 'new' %}active{% endif %}" href="?sort=new">Нові</a>
+      <a class="sort-btn {% if s == 'old' %}active{% endif %}" href="?sort=old">Старі</a>
+      <a class="sort-btn {% if s == 'popular' %}active{% endif %}" href="?sort=popular">Популярні</a>
+      <a class="sort-btn {% if s == 'price_low' %}active{% endif %}" href="?sort=price_low">Дешевші</a>
+      <a class="sort-btn {% if s == 'price_high' %}active{% endif %}" href="?sort=price_high">Дорожчі</a>
+      <a class="sort-btn {% if s == 'name' %}active{% endif %}" href="?sort=name">Назва</a>
+    {% endwith %}
+  </div>
+
+  <div class="products-grid">
+    {% for p in products %}
+      <article class="product-card">
+        {% if p.featured %}
+          <span class="featured-badge">Рекомендований</span>
+        {% endif %}
+        <a href="{{ p.get_absolute_url }}" class="thumb">
+          {% if p.image %}
+            <img src="{{ p.image.url }}" alt="{{ p.name }}">
+          {% else %}
+            <div class="no-image">No image</div>
+          {% endif %}
+        </a>
+        <div class="info">
+          <h3 class="name"><a href="{{ p.get_absolute_url }}">{{ p.name }}</a></h3>
+          <div class="price">{{ p.price }} ₴</div>
+          <p class="desc">{{ p.description|truncatewords:15 }}</p>
+          <div class="meta">
+            <span>Перегляди: {{ p.views }}</span>
+            {% if p.category %}<span>Категорія: <a href="{{ p.category.get_absolute_url }}">{{ p.category.name }}</a></span>{% endif %}
+          </div>
+        </div>
+      </article>
+    {% empty %}
+      <p>Немає товарів.</p>
+    {% endfor %}
+  </div>
+{% endblock %}
