@@ -5,10 +5,25 @@ from django.contrib.auth.decorators import login_required
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.conf import settings
 from main.models import Category
+from .forms import UserRegistrationForm
+from django.contrib import messages
 
 def _nav_categories():
     return Category.objects.filter(is_active=True).order_by("name")
 
+def register_view(request):
+    if request.user.is_authenticated:
+        return redirect('home')  # змініть на вашу головну
+    if request.method == 'POST':
+        form = UserRegistrationForm(request.POST, request.FILES)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, 'Реєстрація успішна! Ласкаво просимо.')
+            return redirect('home')
+    else:
+        form = UserRegistrationForm()
+    return render(request, 'accounts/register.html', {'form': form})
 def login_view(request):
     if request.user.is_authenticated:
         return redirect('main:product_list')

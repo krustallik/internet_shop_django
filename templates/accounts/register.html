@@ -1,31 +1,27 @@
 {% extends 'main/base.html' %}
-{% block title %}Реєстрація — Магазин{% endblock %}
 {% block content %}
-<h1>Реєстрація</h1>
-<form method="post" class="form">
-  {% csrf_token %}
-
-  <div>
-    <label>Логін</label>
-    {{ form.username }}
-    {% if form.username.help_text %}<div class="hint">{{ form.username.help_text }}</div>{% endif %}
-    {% for e in form.username.errors %}<div class="error">{{ e }}</div>{% endfor %}
+<div class="max-w-2xl mx-auto bg-white shadow-lg rounded-lg">
+  <div class="px-6 py-4 bg-gradient-to-r from-teal-500 to-teal-600 rounded-t-lg">
+    <h1 class="text-white text-xl font-semibold">Реєстрація</h1>
   </div>
-
-  <div>
-    <label>Пароль</label>
-    {{ form.password1 }}
-    {% if form.password1.help_text %}<div class="hint">{{ form.password1.help_text|safe }}</div>{% endif %}
-    {% for e in form.password1.errors %}<div class="error">{{ e }}</div>{% endfor %}
+  <div class="p-6">
+    <form method="post" enctype="multipart/form-data" class="space-y-6">
+      {% csrf_token %}
+      {% for field in form %}
+        <div>
+          <label class="block mb-1 font-medium">
+            {{ field.label }}{% if field.field.required %}<span class="text-red-600">*</span>{% endif %}
+          </label>
+          {{ field }}
+          {% if field.help_text %}<p class="text-sm text-gray-500 mt-1">{{ field.help_text|safe }}</p>{% endif %}
+          {% for error in field.errors %}<p class="text-sm text-red-600 mt-1">{{ error }}</p>{% endfor %}
+        </div>
+      {% endfor %}
+      <button class="w-full py-2 rounded bg-teal-600 text-white hover:bg-teal-700">Зареєструватися</button>
+      <p class="text-center text-sm text-gray-600 mt-2">
+        Вже маєте акаунт? <a href="{% url 'login' %}" class="text-teal-600 hover:underline">Увійти</a>
+      </p>
+    </form>
   </div>
-
-  <div>
-    <label>Підтвердження пароля</label>
-    {{ form.password2 }}
-    {% for e in form.password2.errors %}<div class="error">{{ e }}</div>{% endfor %}
-  </div>
-
-  <button class="btn" type="submit">Зареєструватися</button>
-  <a class="btn ghost" href="{% url 'accounts:login' %}">Вхід</a>
-</form>
+</div>
 {% endblock %}
