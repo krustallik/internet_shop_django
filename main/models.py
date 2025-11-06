@@ -2,6 +2,7 @@
 from django.db import models
 from django.urls import reverse
 from ckeditor_uploader.fields import RichTextUploadingField
+from django.db.models import Avg, Count
 
 class Category(models.Model):
     name = models.CharField(max_length=100, db_index=True)
@@ -20,9 +21,6 @@ class Category(models.Model):
 
     def get_absolute_url(self):
         return reverse("main:product_list_by_category", args=[self.slug])
-
-
-
 
 
 class Product(models.Model):
@@ -55,3 +53,17 @@ class Product(models.Model):
 
     def get_absolute_url(self):
         return reverse("main:product_detail", args=[self.id, self.slug])
+
+    def get_average_rating(self):
+        value = self.reviews.filter(is_active=True).aggregate(avg=Avg('rating'))['avg']
+        return round(value or 0, 2)
+
+    def get_reviews_count(self):
+        return self.reviews.filter(is_active=True).count()
+
+    def get_rating_distribution(self):
+        dist = {i: 0 for i in range(1, 6)}
+        qs = self.reviews.filter(is_active=True).values('rating').annotate(c=Count('rating'))
+        for row in qs:
+            dist[row['rating']] = row['c']
+        return dist

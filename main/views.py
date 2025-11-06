@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.db.models import F, Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+# from django.template import context  # ← прибрати
 
 from .models import Product, Category
 
@@ -18,12 +19,10 @@ def product_list(request, category_slug=None):
     category = None
     products = Product.objects.filter(is_available=True)
 
-    # фільтр за категорією
     if category_slug:
         category = get_object_or_404(Category, slug=category_slug, is_active=True)
         products = products.filter(category=category)
 
-    # пошук
     search_query = request.GET.get("q", "").strip()
     if search_query:
         products = products.filter(
@@ -32,11 +31,9 @@ def product_list(request, category_slug=None):
             | Q(category__name__icontains=search_query)
         )
 
-    # сортування
     current_sort = request.GET.get("sort", "new")
     products = products.order_by(SORT_MAP.get(current_sort, "-created_at"))
 
-    # пагінація (6 на сторінку)
     paginator = Paginator(products, 6)
     page = request.GET.get("page", 1)
     try:
@@ -48,9 +45,9 @@ def product_list(request, category_slug=None):
 
     return render(
         request,
-        "main/product_list.html",  # ← під нову назву з підкресленням
+        "main/product_list.html",
         {
-            "products": products_page,  # об’єкт Page
+            "products": products_page,
             "categories": categories,
             "category": category,
             "current_sort": current_sort,
@@ -72,8 +69,21 @@ def product_detail(request, id, slug):
         .order_by("-created_at")[:4]
     )
 
-    return render(
-        request,
-        "main/product_detail.html",  # ← теж з підкресленням
-        {"product": product, "related_products": related_products, "categories": categories},
-    )
+    # дані для блоку відгуків
+    reviews_qs = product.reviews.filter(is_active=True).select_related('author')
+
+    ctx = {
+        "product": product,
+        "related_products": related_products,
+        "categories": categories,
+        "reviews": reviews_qs,
+        "reviews_count": product.get_reviews_count(),
+        "average_rating": product.get_average_rating(),
+        "rating_distribution": product.get_rating_distribution(),
+        "user_review": (
+            reviews_qs.filter(author=request.user).first()
+            if request.user.is_authenticated else None
+        ),
+    }
+
+    return render(request, "main/product_detail.html", ctx)

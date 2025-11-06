@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'ckeditor_uploader',
     'main',
     'accounts',
+    'reviews',
 ]
 
 MIDDLEWARE = [
@@ -57,7 +58,7 @@ CKEDITOR_IMAGE_BACKEND = "pillow"
 
 CKEDITOR_CONFIGS = {
     "default": {
-        "toolbar": "Full",    # або "Basic"
+        "toolbar": "Full",  # або "Basic"
         "height": 300,
         "width": "100%",
     }

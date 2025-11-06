@@ -24,6 +24,7 @@ urlpatterns = [
     path('', include('main.urls', namespace='main')),
     path('', include('accounts.urls', namespace='accounts')),
     path('ckeditor/', include('ckeditor_uploader.urls')),
+    path('reviews/', include(('reviews.urls', 'reviews'), namespace='reviews')),
 ]
 
 if settings.DEBUG:
