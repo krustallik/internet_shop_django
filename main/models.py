@@ -1,8 +1,11 @@
 # main/models.py
+from decimal import Decimal
+
 from django.db import models
 from django.urls import reverse
 from ckeditor_uploader.fields import RichTextUploadingField
 from django.db.models import Avg, Count
+
 
 class Category(models.Model):
     name = models.CharField(max_length=100, db_index=True)
@@ -67,3 +70,35 @@ class Product(models.Model):
         for row in qs:
             dist[row['rating']] = row['c']
         return dist
+
+    @property
+    def get_active_discount(self):
+        """Найкраща активна знижка або None."""
+        discounts = [d for d in self.discounts.all() if d.is_valid()]
+        if not discounts:
+            return None
+        return min(discounts, key=lambda d: d.get_discounted_price(self.price, 1))
+
+    @property
+    def has_active_discount(self):
+        return self.get_active_discount is not None
+
+    @property
+    def get_discounted_price(self):
+        discount = self.get_active_discount
+        if not discount:
+            return self.price
+        return discount.get_discounted_price(self.price, 1)
+
+    @property
+    def get_discount_percentage(self):
+        discount = self.get_active_discount
+        if not discount:
+            return Decimal('0')
+        if discount.discount_type == discount.DISCOUNT_TYPE_PERCENTAGE:
+            return discount.value
+        price = Decimal(self.price)
+        if price > 0:
+            saved = discount.calculate_discount(price, 1)
+            return (saved / price * 100).quantize(Decimal('0.01'))
+        return Decimal('0')

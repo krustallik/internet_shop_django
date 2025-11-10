@@ -1,0 +1,12 @@
+{% if product.has_active_discount %}
+    {% with discount=product.get_active_discount %}
+        <div class="absolute top-2 left-2 inline-flex items-center px-2 py-1
+                    bg-red-600 text-white text-xs font-semibold rounded-full shadow animate-pulse">
+            {% if discount.discount_type == 'percentage' %}
+                -{{ discount.value|floatformat:0 }}%
+            {% else %}
+                -{{ discount.value|floatformat:0 }} грн
+            {% endif %}
+        </div>
+    {% endwith %}
+{% endif %}

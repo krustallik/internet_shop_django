@@ -1,4 +1,3 @@
-
 {% extends 'main/base.html' %}
 {% load shop_filters shop_tags %}
 {% block title %}
@@ -18,19 +17,50 @@
   {% include 'main/components/sort_buttons.html' %}
 
   <div class="products-grid">
-  {% for p in products %}
-    {% show_product_card p %}
-  {% empty %}
-    <p>
-      {% if search_query %}
-        За запитом «{{ search_query }}» нічого не знайдено.
-        <a href="{% url 'main:product_list' %}">Скинути пошук</a>
-      {% else %}
-        Немає товарів.
-      {% endif %}
-    </p>
-  {% endfor %}
-</div>
+    {% for product in products %}
+      <div class="product-card relative bg-white rounded-xl shadow-sm hover:shadow-md transition p-4 flex flex-col">
+        {# бейдж знижки #}
+        {% if product.has_active_discount %}
+          {% include 'discounts/discount_badge.html' with product=product %}
+        {% endif %}
+
+        <a href="{% url 'main:product_detail' id=product.id slug=product.slug %}" class="block mb-3">
+          {% if product.image %}
+            <img src="{{ product.image.url }}"
+                 alt="{{ product.name }}"
+                 class="w-full h-40 object-cover rounded-lg mb-3">
+          {% endif %}
+          <h2 class="text-sm font-semibold line-clamp-2 hover:text-indigo-600">
+            {{ product.name }}
+          </h2>
+        </a>
+
+        <div class="mt-auto">
+          {% if product.has_active_discount %}
+            <div class="text-xs text-gray-400 line-through">
+              {{ product.price }} грн
+            </div>
+            <div class="text-lg font-bold text-red-600">
+              {{ product.get_discounted_price }} грн
+            </div>
+          {% else %}
+            <div class="text-lg font-bold">
+              {{ product.price }} грн
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% empty %}
+      <p>
+        {% if search_query %}
+          За запитом «{{ search_query }}» нічого не знайдено.
+          <a href="{% url 'main:product_list' %}">Скинути пошук</a>
+        {% else %}
+          Немає товарів.
+        {% endif %}
+      </p>
+    {% endfor %}
+  </div>
 
   {% include 'main/pagination.html' %}
 {% endblock %}

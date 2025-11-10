@@ -1,0 +1,16 @@
+<!-- orders/templates/orders/success.html -->
+{% extends 'main/base.html' %}
+{% block title %}Order #{{ order.id }} Success{% endblock %}
+{% block content %}
+  <section class="order-success">
+    <h1>Замовлення № {{ order.id }} успішно оформлено</h1>
+    {% if order.created_at %}
+      <p>Дата: {{ order.created_at }}</p>
+    {% endif %}
+    {% if order.total %}
+      <p>Сума: {{ order.total }}</p>
+    {% endif %}
+    <p>Статус: {{ order.status }}</p>
+    <p><a class="btn" href="{% url 'main:product_list' %}">Повернутися до каталогу</a></p>
+  </section>
+{% endblock %}

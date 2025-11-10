@@ -1,0 +1,16 @@
+{% extends 'main/base.html' %}
+{% block content %}
+    <div class="max-w-md mx-auto bg-white shadow rounded-xl p-6 mt-6">
+        <h1 class="text-xl font-semibold mb-4">Підтвердження замовлення</h1>
+        <p>Товар: <strong>{{ product.name }}</strong></p>
+        <p>Ціна: {{ product.get_discounted_price }} грн</p>
+        <form method="post" class="mt-4 flex gap-3">
+            {% csrf_token %}
+            <input type="number" name="quantity" value="1" min="1"
+                   class="w-20 px-2 py-1 border rounded-lg"/>
+            <button class="px-4 py-2 bg-indigo-600 text-white rounded-lg">
+                Підтвердити
+            </button>
+        </form>
+    </div>
+{% endblock %}

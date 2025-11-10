@@ -1,0 +1,55 @@
+<form id="promo-code-form" method="post"
+      action="{% url 'discounts:apply_promo_code' %}"
+      class="flex flex-col sm:flex-row gap-3 items-stretch mt-4">
+    {% csrf_token %}
+    <input type="text" name="promo_code"
+           value="{{ request.session.promo_code|default_if_none:'' }}"
+           placeholder="Введіть промокод"
+           class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+    <input type="hidden" name="order_amount" value="{{ order_total }}">
+    <button type="submit"
+            class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg">
+        Застосувати
+    </button>
+
+    {% if request.session.promo_code %}
+        <a href="{% url 'discounts:remove_promo_code' %}"
+           class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg text-center">
+            Видалити
+        </a>
+    {% endif %}
+</form>
+
+<div id="promo-code-message" class="mt-2 text-sm"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('promo-code-form');
+    if (!form) return;
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const formData = new FormData(form);
+        fetch(form.action, {
+            method: 'POST',
+            headers: {'X-Requested-With': 'XMLHttpRequest'},
+            body: formData
+        })
+        .then(r => r.json())
+        .then(data => {
+            const msg = document.getElementById('promo-code-message');
+            if (data.success) {
+                msg.textContent = 'Промокод застосовано. Знижка: ' + data.discount;
+                msg.className = 'mt-2 text-sm text-green-600';
+            } else {
+                msg.textContent = data.message || 'Не вдалося застосувати промокод.';
+                msg.className = 'mt-2 text-sm text-red-600';
+            }
+        })
+        .catch(() => {
+            const msg = document.getElementById('promo-code-message');
+            msg.textContent = 'Помилка зʼєднання.';
+            msg.className = 'mt-2 text-sm text-red-600';
+        });
+    });
+});
+</script>

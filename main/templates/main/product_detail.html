@@ -11,8 +11,10 @@
                 <div class="no-image lg">No image</div>
             {% endif %}
         </div>
+
         <div class="content">
             <h1>{{ product.name }}</h1>
+
             <div class="mini-rating">
                 <span class="stars">{{ average_rating|default:0|floatformat:1 }}★</span>
                 <span>· {{ reviews_count }} відгуків</span>
@@ -21,18 +23,54 @@
                     <a class="link" href="{% url 'reviews:add_review' product.id %}">Залишити відгук</a>
                 {% endif %}
             </div>
+
             <div class="meta">
                 {% if product.category %}
-                    <span>Категорія: <a
-                            href="{{ product.category.get_absolute_url }}">{{ product.category.name }}</a></span>
+                    <span>
+                        Категорія:
+                        <a href="{{ product.category.get_absolute_url }}">{{ product.category.name }}</a>
+                    </span>
                 {% endif %}
                 <span>Перегляди: {{ product.views }}</span>
                 <span>Додано: {{ product.created_at|time_ago }}</span>
             </div>
-            <div class="price">Ціна: <b>{{ product.price|currency }}</b></div>
+
+            {# Блок ціни + знижки #}
+            <div class="price-block" style="margin-top: 12px;">
+                {% if product.has_active_discount %}
+                    {% include 'discounts/discount_badge.html' with product=product %}
+
+                    <div class="price-old line-through text-gray-400">
+                        {{ product.price|currency }}
+                    </div>
+
+                    <div class="price-new text-2xl font-bold text-red-600">
+                        {{ product.get_discounted_price|currency }}
+                    </div>
+                {% else %}
+                    <div class="price text-2xl font-bold">
+                        Ціна: <b>{{ product.price|currency }}</b>
+                    </div>
+                {% endif %}
+            </div>
+
+            {# Форма промокоду: працює через apply_promo_code, кладе код у сесію #}
+            <div class="promo-code mt-3">
+                {% if product.has_active_discount %}
+                    {% include 'discounts/promo_code_form.html' with order_total=product.get_discounted_price %}
+                {% else %}
+                    {% include 'discounts/promo_code_form.html' with order_total=product.price %}
+                {% endif %}
+            </div>
+
             {% if product.featured %}
-                <div class="featured-badge">Рекомендований</div>{% endif %}
-            <div class="desc">{{ product.description|linebreaks }}</div>
+                <div class="featured-badge">Рекомендований</div>
+            {% endif %}
+
+            <div class="desc">
+                {{ product.description|linebreaks }}
+            </div>
+
             {% if product.detailed_description %}
                 <section class="product-rich">
                     <h2 style="margin-top:16px;">Детальний опис</h2>
@@ -41,11 +79,31 @@
                     </div>
                 </section>
             {% endif %}
-            <div class="actions">
-                <button class="btn">Додати до кошика</button>
-                <a class="btn ghost" href="{% url 'main:product_list' %}">Повернутися до каталогу</a>
+
+            {# Дії: без кошика, проста покупка одного товару з урахуванням промокоду в сесії #}
+            <div class="actions" style="margin-top: 16px;">
+                <form action="{% url 'orders:buy_now' product.id %}" method="post" class="inline-flex gap-8 items-center">
+                    {% csrf_token %}
+                    <div>
+                        <label for="quantity" class="text-sm text-gray-600">Кількість</label>
+                        <input id="quantity"
+                               type="number"
+                               name="quantity"
+                               value="1"
+                               min="1"
+                               class="qty-input w-20 px-2 py-1 border rounded">
+                    </div>
+                    <button type="submit" class="btn">
+                        Купити зараз
+                    </button>
+                </form>
+
+                <a class="btn ghost" href="{% url 'main:product_list' %}">
+                    Повернутися до каталогу
+                </a>
             </div>
         </div>
+
         {% include 'reviews/review_list.html' %}
     </article>
 
@@ -56,13 +114,29 @@
                 {% for p in related_products %}
                     <article class="product-card small">
                         {% if p.image %}
-                            <a class="thumb" href="{{ p.get_absolute_url }}"><img src="{{ p.image.url }}"
-                                                                                  alt="{{ p.name }}"></a>
+                            <a class="thumb" href="{{ p.get_absolute_url }}">
+                                <img src="{{ p.image.url }}" alt="{{ p.name }}">
+                            </a>
                         {% else %}
                             <a class="thumb no-image" href="{{ p.get_absolute_url }}">No image</a>
                         {% endif %}
-                        <h3 class="name"><a href="{{ p.get_absolute_url }}">{{ p.name }}</a></h3>
-                        <div class="price">{{ p.price }} ₴</div>
+                        <h3 class="name">
+                            <a href="{{ p.get_absolute_url }}">{{ p.name }}</a>
+                        </h3>
+
+                        {% if p.has_active_discount %}
+                            {% include 'discounts/discount_badge.html' with product=p %}
+                            <div class="price-old line-through text-gray-400">
+                                {{ p.price|currency }}
+                            </div>
+                            <div class="price-new text-red-600 font-semibold">
+                                {{ p.get_discounted_price|currency }}
+                            </div>
+                        {% else %}
+                            <div class="price">
+                                {{ p.price|currency }}
+                            </div>
+                        {% endif %}
                     </article>
                 {% endfor %}
             </div>
