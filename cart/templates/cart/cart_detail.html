@@ -16,8 +16,9 @@
       </a>
     </div>
   {% else %}
+    {% with cart_total=cart_total|default:cart.get_total_price %}
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- Список товарів -->
+      {# Список товарів #}
       <div class="lg:col-span-2 bg-white shadow rounded-xl p-4">
         <table class="w-full text-sm">
           <thead>
@@ -58,7 +59,8 @@
               </td>
 
               <td class="py-3 text-center">
-                <form action="{% url 'cart:cart_add' item.product.id %}" method="post" class="inline-flex items-center gap-2">
+                <form action="{% url 'cart:cart_add' item.product.id %}" method="post"
+                      class="inline-flex items-center gap-2">
                   {% csrf_token %}
                   {{ item.update_quantity_form.quantity }}
                   {{ item.update_quantity_form.override }}
@@ -70,7 +72,12 @@
               </td>
 
               <td class="py-3 text-right">
-                {{ item.price|currency }}
+                {% if item.original_price and item.original_price > item.price %}
+                  <div class="text-xs text-gray-400" style="text-decoration: line-through;">
+                    {{ item.original_price|currency }}
+                  </div>
+                {% endif %}
+                <div>{{ item.price|currency }}</div>
               </td>
 
               <td class="py-3 text-right font-semibold">
@@ -93,19 +100,36 @@
         </table>
       </div>
 
-      <!-- Підсумок -->
+      {# Підсумок + промокод #}
       <div class="bg-white shadow rounded-xl p-5 h-fit lg:sticky lg:top-4">
         <h2 class="text-lg font-semibold mb-3">Підсумок замовлення</h2>
+
         <div class="flex justify-between text-sm mb-1">
           <span>Товарів (шт.):</span>
           <span>{{ cart|length }}</span>
         </div>
-        <div class="flex justify-between text-base font-bold mb-4">
-          <span>Загальна вартість:</span>
-          <span>{{ cart.get_total_price|currency }}</span>
+
+        <div class="flex justify-between text-sm mb-1">
+          <span>Проміжна вартість:</span>
+          <span>{{ cart_total|currency }}</span>
         </div>
 
-        {# Тут пізніше підʼєднаєш оформлення замовлення з orders #}
+        {% if promo_code and promo_discount %}
+          <div class="flex justify-between text-sm mb-1">
+            <span>Промокод {{ promo_code }}:</span>
+            <span class="text-green-600">-{{ promo_discount|currency }}</span>
+          </div>
+        {% endif %}
+
+        <div class="flex justify-between text-base font-bold mb-3">
+          <span>До сплати:</span>
+          <span>{{ final_total|default:cart_total|currency }}</span>
+        </div>
+
+        <div class="mt-3">
+          {% include 'discounts/promo_code_form.html' with order_total=cart_total %}
+        </div>
+
         <a href="#"
            class="block w-full text-center mb-2 px-4 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
           Оформити замовлення
@@ -117,6 +141,7 @@
         </a>
       </div>
     </div>
+    {% endwith %}
   {% endif %}
 </div>
 {% endblock %}
