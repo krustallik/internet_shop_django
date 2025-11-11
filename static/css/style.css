@@ -1049,3 +1049,25 @@ a {
   border-radius: 12px;
   display: block;
 }
+
+
+#promo-code-form {
+  margin-bottom: 60px;          /* трохи відступу вниз від форми */
+}
+
+#promo-code-message {
+  display: block;
+  margin-top: 4px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+/* кольори для успіху/помилки, які виставляє JS */
+#promo-code-message.text-green-600 {
+  color: #16a34a;
+}
+
+#promo-code-message.text-red-600 {
+  color: #ef4444;
+}
