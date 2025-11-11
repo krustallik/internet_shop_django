@@ -13,6 +13,7 @@
 <header class="site-header">
   <div class="container header-inner">
     <a class="logo" href="{% url 'main:product_list' %}">Магазин</a>
+
     <nav class="nav">
       <a href="{% url 'main:product_list' %}">Усі товари</a>
       {% if categories %}
@@ -22,8 +23,16 @@
       {% endif %}
     </nav>
 
+    {# Індикатор кошика #}
+    <a href="{% url 'cart:cart_detail' %}" class="cart-indicator">
+      🛒 Кошик
+      {% if cart|length > 0 %}
+        <span class="cart-count">{{ cart|length }}</span>
+      {% endif %}
+    </a>
+
     <div class="auth-buttons">
-    <span class="hint">{% user_greeting %}</span>
+      <span class="hint">{% user_greeting %}</span>
       {% if user.is_authenticated %}
         {% if user.is_staff %}
           <a class="btn" href="{% url 'admin:index' %}">Адмінка</a>
@@ -34,9 +43,7 @@
         <a class="btn" href="{% url 'accounts:login' %}">Вхід</a>
         <a class="btn ghost" href="{% url 'accounts:register' %}">Реєстрація</a>
       {% endif %}
-</div>
-
-
+    </div>
   </div>
 </header>
 

@@ -1,8 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.db.models import F, Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-# from django.template import context  # ← прибрати
-
+from cart.forms import CartAddProductForm
 from .models import Product, Category
 
 SORT_MAP = {
@@ -86,4 +85,10 @@ def product_detail(request, id, slug):
         ),
     }
 
-    return render(request, "main/product_detail.html", ctx)
+    cart_product_form = CartAddProductForm()
+
+    return render(request, 'main/product_detail.html', {
+        'product': product,
+        'related_products': related_products,
+        'cart_product_form': cart_product_form,
+    })

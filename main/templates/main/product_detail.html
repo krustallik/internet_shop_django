@@ -54,14 +54,6 @@
                 {% endif %}
             </div>
 
-            {# Форма промокоду: працює через apply_promo_code, кладе код у сесію #}
-            <div class="promo-code mt-3">
-                {% if product.has_active_discount %}
-                    {% include 'discounts/promo_code_form.html' with order_total=product.get_discounted_price %}
-                {% else %}
-                    {% include 'discounts/promo_code_form.html' with order_total=product.price %}
-                {% endif %}
-            </div>
 
             {% if product.featured %}
                 <div class="featured-badge">Рекомендований</div>
@@ -81,20 +73,14 @@
             {% endif %}
 
             {# Дії: без кошика, проста покупка одного товару з урахуванням промокоду в сесії #}
-            <div class="actions" style="margin-top: 16px;">
-                <form action="{% url 'orders:buy_now' product.id %}" method="post" class="inline-flex gap-8 items-center">
+            <div class="actions">
+                <form action="{% url 'cart:cart_add' product.id %}" method="post"
+                      class="inline-flex gap-4 items-center">
                     {% csrf_token %}
-                    <div>
-                        <label for="quantity" class="text-sm text-gray-600">Кількість</label>
-                        <input id="quantity"
-                               type="number"
-                               name="quantity"
-                               value="1"
-                               min="1"
-                               class="qty-input w-20 px-2 py-1 border rounded">
-                    </div>
+                    {{ cart_product_form.quantity }}
+                    {{ cart_product_form.override }}
                     <button type="submit" class="btn">
-                        Купити зараз
+                        🛒 Додати до кошика
                     </button>
                 </form>
 
@@ -102,9 +88,8 @@
                     Повернутися до каталогу
                 </a>
             </div>
-        </div>
 
-        {% include 'reviews/review_list.html' %}
+            {% include 'reviews/review_list.html' %}
     </article>
 
     {% if related_products %}

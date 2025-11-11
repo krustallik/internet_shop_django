@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'reviews',
     'discounts',
     'orders',
+    'cart',
 ]
 
 MIDDLEWARE = [
@@ -54,6 +55,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'accounts.views.AdminAccessRedirectMiddleware',
 ]
+
+SESSION_COOKIE_AGE = 86400  # 24 години
+CART_SESSION_ID = 'cart'
 
 CKEDITOR_UPLOAD_PATH = "uploads/"
 CKEDITOR_IMAGE_BACKEND = "pillow"
@@ -80,6 +84,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 "django.template.context_processors.static",
+                'cart.context_processors.cart',
             ],
         },
     },
