@@ -11,7 +11,7 @@ class CategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
     list_editable = ("is_active",)
 
-    @admin.display(description="Зображення")
+    @admin.display(description="Image")
     def image_tag(self, obj):
         if obj.image:
             return format_html(
@@ -30,16 +30,16 @@ class ProductAdmin(admin.ModelAdmin):
     ordering = ("-created_at",)
 
     fieldsets = (
-        ("Основна інформація", {
+        ("Product", {
             "fields": ("name","slug","category","image")
         }),
-        ("Описи", {
-            "fields": ("description","detailed_description")  # ← CKEditor тут
+        ("Descriptions", {
+            "fields": ("description","detailed_description")
         }),
-        ("Ціни", {
+        ("Pricing", {
             "fields": ("price",)
         }),
-        ("Налаштування", {
+        ("Availability", {
             "fields": ("is_available","featured","views")
         }),
     )
@@ -48,7 +48,7 @@ class ProductAdmin(admin.ModelAdmin):
         qs = super().get_queryset(request)
         return qs.select_related("category")
 
-    @admin.display(description="Зображення")
+    @admin.display(description="Image")
     def image_tag(self, obj):
         if obj.image:
             return format_html(

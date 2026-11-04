@@ -1,0 +1,8 @@
+{% extends "main/base.html" %}
+{% load shop_filters %}
+{% block title %}Offers for {{ product.name }} — Northline{% endblock %}
+{% block content %}<section class="form-page"><p class="eyebrow">CURRENT OFFERS</p><h1>Offers for {{ product.name }}</h1><p class="section-subtitle">Current product discounts and pricing.</p>
+<div class="form-card"><p>Regular price <strong>{{ product.price|currency }}</strong></p>{% if best_discount %}<p>Best offer price <strong>{{ discounted_price|currency }}</strong></p>{% endif %}
+    {% if discounts %}<div class="data-table-wrap"><table class="data-table"><thead><tr><th>Offer</th><th>Value</th><th>Minimum quantity</th><th>Valid through</th></tr></thead><tbody>{% for discount in discounts %}<tr><td>{{ discount.get_discount_type_display }}</td><td>{% if discount.discount_type == "percentage" %}{{ discount.value|floatformat:0 }}%{% else %}{{ discount.value|currency }}{% endif %}</td><td>{{ discount.min_quantity }}</td><td>{{ discount.end_date|date:'M j, Y' }}</td></tr>{% endfor %}</tbody></table></div>{% else %}<p class="empty-reviews">There are no active offers for this product.</p>{% endif %}
+    <a class="button button-dark"
+       href="{{ product.get_absolute_url }}">Back to product <span>↗</span></a></div></section>{% endblock %}

@@ -12,7 +12,7 @@ def add_review(request, product_id):
     product = get_object_or_404(Product, id=product_id)
 
     if Review.objects.filter(product=product, author=request.user).exists():
-        messages.warning(request, 'Ви вже залишали відгук до цього товару.')
+        messages.warning(request, 'You have already reviewed this product.')
         return redirect('main:product_detail', id=product.id, slug=product.slug)
 
     if request.method == 'POST':
@@ -22,7 +22,7 @@ def add_review(request, product_id):
             review.product = product
             review.author = request.user
             review.save()
-            messages.success(request, 'Відгук опубліковано.')
+            messages.success(request, 'Your review has been published.')
             return redirect('main:product_detail', id=product.id, slug=product.slug)
     else:
         form = ReviewForm()
@@ -33,13 +33,13 @@ def add_review(request, product_id):
 def edit_review(request, review_id):
     review = get_object_or_404(Review, id=review_id)
     if review.author != request.user and not request.user.is_staff:
-        return HttpResponseForbidden('Недостатньо прав.')
+        return HttpResponseForbidden('You do not have permission to edit this review.')
 
     if request.method == 'POST':
         form = ReviewForm(request.POST, instance=review)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Відгук оновлено.')
+            messages.success(request, 'Your review has been updated.')
             return redirect('main:product_detail', id=review.product.id, slug=review.product.slug)
     else:
         form = ReviewForm(instance=review)
@@ -50,15 +50,15 @@ def edit_review(request, review_id):
 def delete_review(request, review_id):
     review = get_object_or_404(Review, id=review_id)
     if review.author != request.user and not request.user.is_staff:
-        return HttpResponseForbidden('Недостатньо прав.')
+        return HttpResponseForbidden('You do not have permission to delete this review.')
 
     if request.method == 'POST':
         product = review.product
         review.delete()
-        messages.success(request, 'Відгук видалено.')
+        messages.success(request, 'Your review has been deleted.')
         return redirect('main:product_detail', id=product.id, slug=product.slug)
 
-    # просте підтвердження через POST
+    # Deletion requires a POST request.
     return HttpResponseRedirect(reverse('main:product_detail', kwargs={'id': review.product.id, 'slug': review.product.slug}))
 
 def mark_helpful(request, review_id):

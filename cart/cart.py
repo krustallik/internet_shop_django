@@ -13,27 +13,26 @@ class Cart:
 
     def add(self, product, quantity=1, override_quantity=False):
         """
-        Додаємо товар в кошик.
-        Ціна, яка зберігається, вже з урахуванням знижки (якщо є).
+        Add a product to the bag, storing its current discounted unit price.
         """
         product_id = str(product.id)
 
-        # ціна з урахуванням знижки (твій Product вже має ці методи/властивості)
+        # Prefer the current discounted price when a promotion is active.
         try:
             has_discount = product.has_active_discount
         except AttributeError:
             has_discount = False
 
         if has_discount:
-            unit_price = product.get_discounted_price  # твоя властивість
+            unit_price = product.get_discounted_price
         else:
             unit_price = product.price
 
         if product_id not in self.cart:
             self.cart[product_id] = {
                 'quantity': 0,
-                'price': str(unit_price),          # ціна в кошику
-                'original_price': str(product.price),  # для відображення стара ціна
+                'price': str(unit_price),
+                'original_price': str(product.price),
             }
 
         if override_quantity:
@@ -57,8 +56,7 @@ class Cart:
 
     def __iter__(self):
         """
-        Додаємо в елементи реальний product, перетворюємо ціни в Decimal,
-        рахуємо total_price.
+        Attach product objects, convert stored prices to Decimal, and calculate line totals.
         """
         product_ids = self.cart.keys()
         products = Product.objects.filter(id__in=product_ids)

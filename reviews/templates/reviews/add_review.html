@@ -1,43 +1,4 @@
-{% extends 'main/base.html' %}
-{% block content %}
-<h2 class="page-title">Залишити відгук про “{{ product.name }}”</h2>
-
-<form method="post" class="form">
-  {% csrf_token %}
-
-  <div class="form-group">
-    <label>Оцінка</label>
-    <div class="rating-options">
-      {{ form.rating }}
-    </div>
-    {% if form.rating.errors %}<div class="error">{{ form.rating.errors }}</div>{% endif %}
-  </div>
-
-  <div class="form-group">
-    <label for="{{ form.title.id_for_label }}">Заголовок</label>
-    {{ form.title }}
-    {% if form.title.errors %}<div class="error">{{ form.title.errors }}</div>{% endif %}
-  </div>
-
-  <div class="form-group">
-    <label for="{{ form.content.id_for_label }}">Текст відгуку</label>
-    {{ form.content }}
-    {% if form.content.errors %}<div class="error">{{ form.content.errors }}</div>{% endif %}
-  </div>
-
-  <div class="form-group">
-    <label for="{{ form.advantages.id_for_label }}">Переваги</label>
-    {{ form.advantages }}
-  </div>
-
-  <div class="form-group">
-    <label for="{{ form.disadvantages.id_for_label }}">Недоліки</label>
-    {{ form.disadvantages }}
-  </div>
-
-  <div class="actions">
-    <button class="btn" type="submit">Опублікувати</button>
-    <a class="btn ghost" href="{% url 'main:product_detail' id=product.id slug=product.slug %}">Скасувати</a>
-  </div>
-</form>
-{% endblock %}
+{% extends "main/base.html" %}
+{% block title %}Write a review — Northline{% endblock %}
+{% block content %}<section class="form-page"><p class="eyebrow">YOUR EXPERIENCE MATTERS</p><h1>Review {{ product.name }}</h1><p class="section-subtitle">A few honest details can help someone choose well.</p>
+<form method="post" class="form-card">{% csrf_token %}{% for field in form %}<div class="form-group"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}{% for error in field.errors %}<span class="field-error">{{ error }}</span>{% endfor %}</div>{% endfor %}{% for error in form.non_field_errors %}<span class="field-error">{{ error }}</span>{% endfor %}<div class="form-actions"><button class="button button-dark" type="submit">Publish review</button><a class="button button-outline" href="{{ product.get_absolute_url }}">Cancel</a></div></form></section>{% endblock %}

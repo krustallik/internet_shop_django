@@ -1,115 +1,19 @@
-<section id="reviews" class="reviews">
-    <div class="reviews-header">
-        <div class="reviews-summary">
-            <span class="value">{{ average_rating|default:0|floatformat:1 }}</span>
-            <span class="outof">/ 5 • {{ reviews_count }} відгуків</span>
+<section id="reviews" class="reviews-section">
+    <div class="section-heading"><div><p class="eyebrow">NOTES FROM THE COMMUNITY</p><h2>Customer reviews</h2></div>{% if user.is_authenticated and not user_review %}<a class="button button-outline"
+                                                                                                                                                                         href="{% url 'reviews:add_review' product.id %}">Write a review <span>↗</span></a>{% elif not user.is_authenticated %}<a class="text-link"
+                                                                                                                                                                                                                                                                                                  href="{% url 'accounts:login' %}?next={{ request.path|urlencode }}">Sign in to review →</a>{% endif %}</div>
+    <div class="reviews-overview">
+        <div class="rating-score">
+            <strong>{{ average_rating|default:0|floatformat:1 }}</strong><span>out of 5</span>
+            <div class="stars"
+                 aria-label="Average {{ average_rating|default:0|floatformat:1 }} out of 5">★★★★★</div>
+            <small>{{ reviews_count }} reviews</small>
         </div>
-
-        {% if reviews_count %}
-            <div class="rating-distribution">
-                {# widthratio count reviews_count 100 -> % заповнення #}
-                {% if reviews_count %}
-                    <div class="rating-distribution">
-                        <div class="rating-row">
-                            <span>5★</span>
-                            <div class="rating-bar">
-                                <div class="rating-bar-fill"
-                                     style="width:{% widthratio rating_distribution.5|default:0 reviews_count 100 %}%"></div>
-                            </div>
-                            <span>{{ rating_distribution.5|default:0 }}</span>
-                        </div>
-                        <div class="rating-row">
-                            <span>4★</span>
-                            <div class="rating-bar">
-                                <div class="rating-bar-fill"
-                                     style="width:{% widthratio rating_distribution.4|default:0 reviews_count 100 %}%"></div>
-                            </div>
-                            <span>{{ rating_distribution.4|default:0 }}</span>
-                        </div>
-                        <div class="rating-row">
-                            <span>3★</span>
-                            <div class="rating-bar">
-                                <div class="rating-bar-fill"
-                                     style="width:{% widthratio rating_distribution.3|default:0 reviews_count 100 %}%"></div>
-                            </div>
-                            <span>{{ rating_distribution.3|default:0 }}</span>
-                        </div>
-                        <div class="rating-row">
-                            <span>2★</span>
-                            <div class="rating-bar">
-                                <div class="rating-bar-fill"
-                                     style="width:{% widthratio rating_distribution.2|default:0 reviews_count 100 %}%"></div>
-                            </div>
-                            <span>{{ rating_distribution.2|default:0 }}</span>
-                        </div>
-                        <div class="rating-row">
-                            <span>1★</span>
-                            <div class="rating-bar">
-                                <div class="rating-bar-fill"
-                                     style="width:{% widthratio rating_distribution.1|default:0 reviews_count 100 %}%"></div>
-                            </div>
-                            <span>{{ rating_distribution.1|default:0 }}</span>
-                        </div>
-                    </div>
-                {% endif %}
-            </div>
-        {% endif %}
-
-        <div class="reviews-actions">
-            {% if user.is_authenticated and not user_review %}
-                <a class="btn" href="{% url 'reviews:add_review' product.id %}">Залишити відгук</a>
-            {% endif %}
-        </div>
-    </div>
-
-    {% if reviews %}
-        <div class="review-list">
-            {% for review in reviews %}
-                <article class="review-item">
-                    <div class="review-head">
-                        <div class="avatar">{{ review.author.username|first|upper }}</div>
-                        <div>
-                            <div><strong>{{ review.author.username }}</strong> •
-                                <span class="stars"
-                                      title="{{ review.rating }}/5">{{ review.get_rating_display_stars }}</span>
-                            </div>
-                            <div class="review-meta">{{ review.created_at|date:"Y-m-d H:i" }}</div>
-                        </div>
-                    </div>
-
-                    <div class="review-title">{{ review.title }}</div>
-                    <div class="review-body">{{ review.content }}</div>
-
-                    {% if review.advantages %}
-                        <div class="review-prop"><strong>Переваги:</strong> {{ review.advantages }}</div>
-                    {% endif %}
-                    {% if review.disadvantages %}
-                        <div class="review-prop"><strong>Недоліки:</strong> {{ review.disadvantages }}</div>
-                    {% endif %}
-
-                    <div class="review-actions">
-                        <a class="link" href="{% url 'reviews:mark_helpful' review.id %}">Корисно
-                            ({{ review.helpful_count }})</a>
-
-                        {% if user.is_authenticated %}
-                            {% if review.author_id == user.id or user.is_staff %}
-                                <span>·</span>
-                                <a class="link" href="{% url 'reviews:edit_review' review.id %}">Редагувати</a>
-                                <span>·</span>
-                                <form method="post" action="{% url 'reviews:delete_review' review.id %}"
-                                      style="display:inline;">
-                                    {% csrf_token %}
-                                    <button class="btn linklike" type="submit"
-                                            onclick="return confirm('Видалити відгук?')">Видалити
-                                    </button>
-                                </form>
-                            {% endif %}
-                        {% endif %}
-                    </div>
-                </article>
-            {% endfor %}
-        </div>
-    {% else %}
-        <div class="alert info">Поки немає відгуків.</div>
-    {% endif %}
+        {% if reviews_count %}<div class="rating-distribution">{% for rating, count in rating_distribution.items %}<div class="rating-row"><span>{{ rating }} stars</span><div class="rating-bar"><span style="width:{% widthratio count reviews_count 100 %}%"></span></div><span>{{ count }}</span></div>{% endfor %}</div>{% endif %}</div>
+    {% if reviews %}<div class="review-list">{% for review in reviews %}<article class="review-item"><div class="review-head"><span class="avatar" aria-hidden="true">{{ review.author.username|first|upper }}</span><div><strong>{{ review.author.username }}</strong><div class="review-meta"><span class="stars">{{ review.get_rating_display_stars }}</span><span>{{ review.created_at|date:'M j, Y' }}</span></div></div></div>
+        <h3 class="review-title">{{ review.title }}</h3>
+        <p class="review-body">{{ review.content }}</p>
+        {% if review.advantages %}<p class="review-prop"><strong>What works</strong> {{ review.advantages }}</p>{% endif %}{% if review.disadvantages %}<p class="review-prop"><strong>Could be better</strong> {{ review.disadvantages }}</p>{% endif %}
+        <div class="review-actions"><a class="text-link" href="{% url 'reviews:mark_helpful' review.id %}">Helpful · {{ review.helpful_count }}</a>{% if user.is_authenticated and review.author_id == user.id or user.is_staff %}<a class="text-link" href="{% url 'reviews:edit_review' review.id %}">Edit</a><form method="post" action="{% url 'reviews:delete_review' review.id %}">{% csrf_token %}<button class="text-button" type="submit">Delete</button></form>{% endif %}</div>
+    </article>{% endfor %}</div>{% else %}<p class="empty-reviews">No reviews yet. Be the first to share your thoughts.</p>{% endif %}
 </section>

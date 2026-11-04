@@ -1,55 +1,20 @@
-<form id="promo-code-form" method="post"
-      action="{% url 'discounts:apply_promo_code' %}"
-      class="flex flex-col sm:flex-row gap-3 items-stretch mt-4">
+<form id="promo-code-form"
+      method="post"
+      action="{% url 'discounts:apply_promo_code' %}">
     {% csrf_token %}
-    <input type="text" name="promo_code"
-           value="{{ request.session.promo_code|default_if_none:'' }}"
-           placeholder="Введіть промокод"
-           class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" />
     <input type="hidden" name="order_amount" value="{{ order_total }}">
-    <button type="submit"
-            class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg">
-        Застосувати
-    </button>
-
-    {% if request.session.promo_code %}
-        <a href="{% url 'discounts:remove_promo_code' %}"
-           class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg text-center">
-            Видалити
-        </a>
-    {% endif %}
+    <div class="promo-input-row">
+        <label class="sr-only" for="promo-code-input">Promo code</label><input id="promo-code-input"
+                                                                               type="text"
+                                                                               name="promo_code"
+                                                                               value="{{ request.session.promo_code|default_if_none:'' }}"
+                                                                               placeholder="WELCOME10"
+                                                                               autocomplete="off"><button type="submit">Apply</button>
+    </div>
 </form>
-
-<div id="promo-code-message" class="mt-2 text-sm"></div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const form = document.getElementById('promo-code-form');
-    if (!form) return;
-    form.addEventListener('submit', function (e) {
-        e.preventDefault();
-        const formData = new FormData(form);
-        fetch(form.action, {
-            method: 'POST',
-            headers: {'X-Requested-With': 'XMLHttpRequest'},
-            body: formData
-        })
-        .then(r => r.json())
-        .then(data => {
-            const msg = document.getElementById('promo-code-message');
-            if (data.success) {
-                msg.textContent = 'Промокод застосовано. Знижка: ' + data.discount;
-                msg.className = 'mt-2 text-sm text-green-600';
-            } else {
-                msg.textContent = data.message || 'Не вдалося застосувати промокод.';
-                msg.className = 'mt-2 text-sm text-red-600';
-            }
-        })
-        .catch(() => {
-            const msg = document.getElementById('promo-code-message');
-            msg.textContent = 'Помилка зʼєднання.';
-            msg.className = 'mt-2 text-sm text-red-600';
-        });
-    });
-});
-</script>
+{% if request.session.promo_code %}<form method="post" action="{% url 'discounts:remove_promo_code' %}">{% csrf_token %}<button class="promo-remove-button" type="submit">Remove applied code</button></form>{% endif %}
+<div id="promo-code-message"
+     class="promo-message"
+     role="status"
+     aria-live="polite"></div>
+<script>document.addEventListener('DOMContentLoaded',function(){const form=document.getElementById('promo-code-form');if(!form)return;form.addEventListener('submit',async function(event){event.preventDefault();const message=document.getElementById('promo-code-message');try{const response=await fetch(form.action,{method:'POST',headers:{'X-Requested-With':'XMLHttpRequest'},body:new FormData(form)});const data=await response.json();message.textContent=data.success?'Code applied — save '+data.discount+' on this demo order.':(data.message||'This code could not be applied.');message.style.color=data.success?'#285c52':'#a3483d';if(data.success)window.location.reload()}catch(error){message.textContent='Could not connect. Please try again.';message.style.color='#a3483d'}})});</script>

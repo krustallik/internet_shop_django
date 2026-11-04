@@ -18,15 +18,15 @@ class DiscountAdmin(admin.ModelAdmin):
     date_hierarchy = 'start_date'
     actions = ('activate_discounts', 'deactivate_discounts')
 
-    @admin.display(boolean=True, description='Діє зараз')
+    @admin.display(boolean=True, description='Valid now')
     def is_valid_now(self, obj):
         return obj.is_valid()
 
-    @admin.action(description='Активувати обрані знижки')
+    @admin.action(description='Activate selected discounts')
     def activate_discounts(self, request, queryset):
         queryset.update(is_active=True)
 
-    @admin.action(description='Деактивувати обрані знижки')
+    @admin.action(description='Deactivate selected discounts')
     def deactivate_discounts(self, request, queryset):
         queryset.update(is_active=False)
 
@@ -42,19 +42,19 @@ class PromoCodeAdmin(admin.ModelAdmin):
     search_fields = ('code', 'description')
     readonly_fields = ('used_count', 'created_at')
     fieldsets = (
-        ('Основне', {
+        ('Promo code', {
             'fields': ('code', 'discount_type', 'value', 'description'),
         }),
-        ('Обмеження', {
+        ('Usage limits', {
             'fields': ('start_date', 'end_date', 'usage_limit', 'min_order_amount'),
         }),
-        ('Стан', {
+        ('Status', {
             'fields': ('is_active', 'used_count', 'created_by', 'created_at'),
         }),
     )
     actions = ('activate_codes', 'deactivate_codes', 'reset_usage')
 
-    @admin.display(description='Використання')
+    @admin.display(description='Usage')
     def usage_progress(self, obj):
         if not obj.usage_limit:
             return f'{obj.used_count}'
@@ -66,19 +66,19 @@ class PromoCodeAdmin(admin.ModelAdmin):
             percent, obj.used_count, obj.usage_limit
         )
 
-    @admin.display(description='Період')
+    @admin.display(description='Valid period')
     def valid_period(self, obj):
         return f'{obj.start_date} — {obj.end_date}'
 
-    @admin.action(description='Активувати обрані')
+    @admin.action(description='Activate selected promo codes')
     def activate_codes(self, request, queryset):
         queryset.update(is_active=True)
 
-    @admin.action(description='Деактивувати обрані')
+    @admin.action(description='Deactivate selected promo codes')
     def deactivate_codes(self, request, queryset):
         queryset.update(is_active=False)
 
-    @admin.action(description='Скинути лічильник')
+    @admin.action(description='Reset usage count')
     def reset_usage(self, request, queryset):
         queryset.update(used_count=0)
 

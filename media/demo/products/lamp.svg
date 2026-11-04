@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 560" role="img" aria-labelledby="title desc">
+  <title id="title">Arc desk lamp</title><desc id="desc">A sculptural green desk lamp on a cool mint backdrop.</desc>
+  <defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#dcebe6"/><stop offset="1" stop-color="#b7d2c8"/></linearGradient><filter id="shadow" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="22" stdDeviation="16" flood-color="#21463b" flood-opacity=".18"/></filter></defs>
+  <rect width="720" height="560" rx="32" fill="url(#bg)"/><circle cx="552" cy="140" r="90" fill="#f8f6e9" opacity=".65"/><ellipse cx="365" cy="437" rx="160" ry="22" fill="#315b4e" opacity=".16"/>
+  <g filter="url(#shadow)" stroke-linecap="round" stroke-linejoin="round"><path d="M342 377 434 220" stroke="#244e47" stroke-width="26"/><path d="M434 220c-22-86-12-124 39-148" fill="none" stroke="#244e47" stroke-width="22"/><path d="M473 71 582 91l-42 109-114-21z" fill="#d6a34f"/><path d="M461 186 557 203" stroke="#ae7935" stroke-width="11"/><path d="M264 392h191l-20 39H281z" fill="#244e47"/><path d="M325 385c-3-46 18-68 54-85" fill="none" stroke="#44786c" stroke-width="14"/></g>
+</svg>

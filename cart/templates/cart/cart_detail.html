@@ -1,147 +1,38 @@
-{% extends 'main/base.html' %}
+{% extends "main/base.html" %}
 {% load shop_filters %}
-{% block title %}Кошик{% endblock %}
-
-{% block content %}
-<div class="max-w-6xl mx-auto mt-6">
-  <h1 class="text-2xl font-bold mb-4">🛒 Ваш кошик</h1>
-
-  {% if cart|length == 0 %}
-    <div class="bg-white shadow rounded-xl p-8 text-center">
-      <div class="text-5xl mb-4">🛍️</div>
-      <p class="text-lg mb-4">Ваш кошик порожній.</p>
-      <a href="{% url 'main:product_list' %}"
-         class="inline-block px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
-        Перейти до покупок
-      </a>
-    </div>
-  {% else %}
-    {% with cart_total=cart_total|default:cart.get_total_price %}
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {# Список товарів #}
-      <div class="lg:col-span-2 bg-white shadow rounded-xl p-4">
-        <table class="w-full text-sm">
-          <thead>
-            <tr class="border-b">
-              <th class="text-left py-2">Товар</th>
-              <th class="text-center py-2">Кількість</th>
-              <th class="text-right py-2">Ціна</th>
-              <th class="text-right py-2">Сума</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-          {% for item in cart %}
-            <tr class="border-b align-middle">
-              <td class="py-3">
-                <div class="flex items-center gap-3">
-                  {% if item.product.image %}
-                    <img src="{{ item.product.image.url }}"
-                         alt="{{ item.product.name }}"
-                         class="w-16 h-16 object-cover rounded-lg">
-                  {% else %}
-                    <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center text-xs text-gray-500">
-                      No image
+{% block title %}Your bag — Northline{% endblock %}
+{% block content %}<section class="cart-page"><div class="cart-title-row"><div><p class="eyebrow">YOUR NORTHLINE SELECTION</p><h1>Your bag</h1><p>{{ cart|length }} item{{ cart|length|pluralize }}</p></div><a class="text-link" href="{% url 'main:product_list' %}">Continue shopping →</a></div>
+    {% if cart|length == 0 %}<div class="cart-empty"><span aria-hidden="true">○</span><h2>A little room for something good.</h2><p>Your bag is empty for now.</p><a class="button button-dark" href="{% url 'main:product_list' %}">Explore the collection <span>↗</span></a></div>
+{% else %}
+    <div class="cart-layout">
+        <div class="cart-items">
+            {% for item in cart %}
+                <article class="cart-item">
+                    {% if item.product.image %}<img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">{% else %}<div class="cart-item-image image-fallback">N.</div>{% endif %}
+                    <div class="cart-item-info">
+                        <h2><a href="{{ item.product.get_absolute_url }}">{{ item.product.name }}</a></h2>
+                        <p>{{ item.product.category.name|default:'Northline collection' }}</p>
+                        <span class="cart-unit-price">{{ item.price|currency }} each</span>
                     </div>
-                  {% endif %}
-                  <div>
-                    <a href="{{ item.product.get_absolute_url }}"
-                       class="font-semibold hover:text-indigo-600">
-                      {{ item.product.name }}
-                    </a>
-                    {% if item.product.category %}
-                      <div class="text-xs text-gray-500">
-                        {{ item.product.category.name }}
-                      </div>
-                    {% endif %}
-                  </div>
-                </div>
-              </td>
-
-              <td class="py-3 text-center">
-                <form action="{% url 'cart:cart_add' item.product.id %}" method="post"
-                      class="inline-flex items-center gap-2">
-                  {% csrf_token %}
-                  {{ item.update_quantity_form.quantity }}
-                  {{ item.update_quantity_form.override }}
-                  <button type="submit"
-                          class="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded-lg">
-                    Оновити
-                  </button>
-                </form>
-              </td>
-
-              <td class="py-3 text-right">
-                {% if item.original_price and item.original_price > item.price %}
-                  <div class="text-xs text-gray-400" style="text-decoration: line-through;">
-                    {{ item.original_price|currency }}
-                  </div>
-                {% endif %}
-                <div>{{ item.price|currency }}</div>
-              </td>
-
-              <td class="py-3 text-right font-semibold">
-                {{ item.total_price|currency }}
-              </td>
-
-              <td class="py-3 text-right">
-                <form action="{% url 'cart:cart_remove' item.product.id %}" method="post">
-                  {% csrf_token %}
-                  <button type="submit"
-                          class="text-red-500 hover:text-red-700"
-                          title="Видалити">
-                    ✕
-                  </button>
-                </form>
-              </td>
-            </tr>
-          {% endfor %}
-          </tbody>
-        </table>
-      </div>
-
-      {# Підсумок + промокод #}
-      <div class="bg-white shadow rounded-xl p-5 h-fit lg:sticky lg:top-4">
-        <h2 class="text-lg font-semibold mb-3">Підсумок замовлення</h2>
-
-        <div class="flex justify-between text-sm mb-1">
-          <span>Товарів (шт.):</span>
-          <span>{{ cart|length }}</span>
+                    <form action="{% url 'cart:cart_add' item.product.id %}"
+                          method="post"
+                          class="cart-quantity-form">{% csrf_token %}<input type="number"
+                                                                            name="quantity"
+                                                                            value="{{ item.quantity }}"
+                                                                            min="1"
+                                                                            max="99"
+                                                                            aria-label="Quantity for {{ item.product.name }}"><input type="hidden" name="override" value="on"><button type="submit" class="mini-button">Update</button></form>
+                    <span class="cart-line-total">{{ item.total_price|currency }}</span><form action="{% url 'cart:cart_remove' item.product.id %}" method="post">{% csrf_token %}<button type="submit"
+                                                                                                                                                                                          class="remove-button"
+                                                                                                                                                                                          aria-label="Remove {{ item.product.name }}">×</button></form>
+                </article>
+            {% endfor %}
         </div>
-
-        <div class="flex justify-between text-sm mb-1">
-          <span>Проміжна вартість:</span>
-          <span>{{ cart_total|currency }}</span>
-        </div>
-
-        {% if promo_code and promo_discount %}
-          <div class="flex justify-between text-sm mb-1">
-            <span>Промокод {{ promo_code }}:</span>
-            <span class="text-green-600">-{{ promo_discount|currency }}</span>
-          </div>
-        {% endif %}
-
-        <div class="flex justify-between text-base font-bold mb-3">
-          <span>До сплати:</span>
-          <span>{{ final_total|default:cart_total|currency }}</span>
-        </div>
-
-        <div class="mt-3">
-          {% include 'discounts/promo_code_form.html' with order_total=cart_total %}
-        </div>
-
-        <a href="#"
-           class="block w-full text-center mb-2 px-4 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
-          Оформити замовлення
-        </a>
-
-        <a href="{% url 'main:product_list' %}"
-           class="block w-full text-center px-4 py-3 bg-gray-100 rounded-lg hover:bg-gray-200">
-          Продовжити покупки
-        </a>
-      </div>
+        <aside class="cart-summary"><h2>Order summary</h2><div class="summary-row"><span>Subtotal</span><span>{{ cart_total|currency }}</span></div>{% if promo_code and promo_discount %}<div class="summary-row discount"><span>Code {{ promo_code }}</span><span>−{{ promo_discount|currency }}</span></div>{% endif %}<div class="summary-row total"><span>Estimated total</span><span>{{ final_total|default:cart_total|currency }}</span></div>
+            <div class="promo-panel"><h3>Have a code?</h3>{% include "discounts/promo_code_form.html" with order_total=cart_total %}</div>
+            <p class="cart-demo-note">This portfolio demo does not include checkout, payment processing, or shipping. Your bag is stored in this browser session.</p>
+        </aside>
     </div>
-    {% endwith %}
-  {% endif %}
-</div>
+{% endif %}
+</section>
 {% endblock %}

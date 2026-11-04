@@ -1,16 +1,4 @@
-<!-- orders/templates/orders/success.html -->
-{% extends 'main/base.html' %}
-{% block title %}Order #{{ order.id }} Success{% endblock %}
-{% block content %}
-  <section class="order-success">
-    <h1>Замовлення № {{ order.id }} успішно оформлено</h1>
-    {% if order.created_at %}
-      <p>Дата: {{ order.created_at }}</p>
-    {% endif %}
-    {% if order.total %}
-      <p>Сума: {{ order.total }}</p>
-    {% endif %}
-    <p>Статус: {{ order.status }}</p>
-    <p><a class="btn" href="{% url 'main:product_list' %}">Повернутися до каталогу</a></p>
-  </section>
-{% endblock %}
+{% extends "main/base.html" %}
+{% load shop_filters %}
+{% block title %}Demo order #{{ order.id }} — Northline{% endblock %}
+{% block content %}<section class="order-card"><p class="eyebrow">DEMO ORDER CREATED</p><h1>Thanks, {{ request.user.first_name|default:request.user.username }}.</h1><p>This is a sample order record only. No payment or shipment has been started.</p><div class="account-details"><div class="account-detail"><span>Order reference</span><strong>NL-{{ order.id|stringformat:'05d' }}</strong></div><div class="account-detail"><span>Status</span><strong>{{ order.get_status_display }}</strong></div><div class="account-detail"><span>Item</span><strong>{{ order.product.name }}</strong></div><div class="account-detail"><span>Total</span><strong>{{ order.final_price|currency }}</strong></div></div><p><a class="button button-dark" href="{% url 'main:product_list' %}">Return to the collection <span>↗</span></a></p></section>{% endblock %}

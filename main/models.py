@@ -3,7 +3,6 @@ from decimal import Decimal
 
 from django.db import models
 from django.urls import reverse
-from ckeditor_uploader.fields import RichTextUploadingField
 from django.db.models import Avg, Count
 
 
@@ -16,8 +15,8 @@ class Category(models.Model):
 
     class Meta:
         ordering = ["name"]
-        verbose_name = "Категорія"
-        verbose_name_plural = "Категорії"
+        verbose_name = "Category"
+        verbose_name_plural = "Categories"
 
     def __str__(self):
         return self.name
@@ -34,10 +33,9 @@ class Product(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True)
     description = models.TextField()
-    # НОВЕ поле з форматуванням:
-    detailed_description = RichTextUploadingField(
+    detailed_description = models.TextField(
         blank=True,
-        help_text="Детальний опис товару з форматуванням (CKEditor)"
+        help_text="Additional product details."
     )
     price = models.DecimalField(max_digits=10, decimal_places=2)
     image = models.ImageField(upload_to="products/%Y/%m/%d", blank=True)
@@ -48,8 +46,8 @@ class Product(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = "Товар"
-        verbose_name_plural = "Товари"
+        verbose_name = "Product"
+        verbose_name_plural = "Products"
 
     def __str__(self):
         return self.name
@@ -73,7 +71,7 @@ class Product(models.Model):
 
     @property
     def get_active_discount(self):
-        """Найкраща активна знижка або None."""
+        """Return the active discount with the lowest resulting price."""
         discounts = [d for d in self.discounts.all() if d.is_valid()]
         if not discounts:
             return None

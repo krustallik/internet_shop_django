@@ -1,26 +1,24 @@
 {% load shop_filters %}
 <article class="product-card">
-    {% if p.featured %}<span class="featured-badge">Рекомендований</span>{% endif %}
-    <a href="{{ p.get_absolute_url }}" class="thumb">
-        {% if p.image %}
-            <img src="{{ p.image.url }}" alt="{{ p.name }}">
-        {% else %}
-            <div class="no-image">No image</div>
-        {% endif %}
+    <a href="{{ p.get_absolute_url }}"
+       class="product-image-link"
+       aria-label="View {{ p.name }}">
+        {% if p.has_active_discount %}<span class="product-badge">Save {{ p.get_discount_percentage|floatformat:0 }}%</span>{% endif %}
+        {% if p.featured %}<span class="product-featured">Northline pick</span>{% endif %}
+        {% if p.image %}<img class="product-image"
+                             src="{{ p.image.url }}"
+                             alt="{{ p.name }}"
+                             loading="lazy">{% else %}<div class="product-image image-fallback" aria-hidden="true">N.</div>{% endif %}
+        <span class="quick-view" aria-hidden="true">View item <span>↗</span></span>
     </a>
-    <div class="info">
-        <h3 class="name"><a href="{{ p.get_absolute_url }}">{{ p.name }}</a></h3>
-        <div class="price">{{ p.price|currency }}</div>
-        <div class="mini-rating">
-            <span class="stars">{{ product.get_average_rating|floatformat:1 }}★</span>
-            <span>· {{ product.get_reviews_count }} відгуків</span>
+    <div class="product-info">
+        <div class="product-title-row">
+            <h2><a href="{{ p.get_absolute_url }}">{{ p.name }}</a></h2>
+            <span class="product-arrow" aria-hidden="true">↗</span>
         </div>
-        <p class="desc">{{ p.description|truncatewords:15 }}</p>
-        <div class="meta">
-            <span>Перегляди: {{ p.views|compact_number }}</span>
-            {% if p.created_at %}<span>Додано: {{ p.created_at|time_ago }}</span>{% endif %}
-            {% if p.category %}
-                <span>Категорія: <a href="{{ p.category.get_absolute_url }}">{{ p.category.name }}</a></span>{% endif %}
-        </div>
+        <p class="product-category">{{ p.category.name|default:'Everyday goods' }}</p>
+        <p class="product-description">{{ p.description|truncatewords:13 }}</p>
+        <div class="product-bottom"><div class="product-price">{% if p.has_active_discount %}<span class="old-price">{{ p.price|currency }}</span><span>{{ p.get_discounted_price|currency }}</span>{% else %}<span>{{ p.price|currency }}</span>{% endif %}</div>
+        {% with rating=p.get_average_rating count=p.get_reviews_count %}{% if count %}<span class="product-rating"><span>★</span> {{ rating|floatformat:1 }} <small>({{ count }})</small></span>{% endif %}{% endwith %}</div>
     </div>
 </article>

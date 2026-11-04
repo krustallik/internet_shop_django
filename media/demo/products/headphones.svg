@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 560" role="img" aria-labelledby="title desc">
+  <title id="title">Wireless headphones</title><desc id="desc">Dark teal over-ear headphones on a pale blue background.</desc>
+  <defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#d9eef0"/><stop offset="1" stop-color="#aacfd2"/></linearGradient><filter id="shadow" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="24" stdDeviation="18" flood-color="#173c42" flood-opacity=".18"/></filter></defs>
+  <rect width="720" height="560" rx="32" fill="url(#bg)"/><circle cx="565" cy="116" r="82" fill="#f3f6ee" opacity=".55"/><ellipse cx="360" cy="430" rx="190" ry="28" fill="#416b70" opacity=".18"/>
+  <g filter="url(#shadow)" stroke-linecap="round" stroke-linejoin="round"><path d="M203 322v-84a157 157 0 0 1 314 0v84" fill="none" stroke="#183a40" stroke-width="48"/><path d="M199 262c-21 0-38 17-38 38v105c0 34 27 61 61 61h22V285c0-13-11-23-24-23z" fill="#244f56"/><path d="M521 262c21 0 38 17 38 38v105c0 34-27 61-61 61h-22V285c0-13 11-23 24-23z" fill="#244f56"/><rect x="190" y="302" width="46" height="118" rx="22" fill="#6ca2a4"/><rect x="484" y="302" width="46" height="118" rx="22" fill="#6ca2a4"/><path d="M208 270v-31a152 152 0 0 1 304 0v31" fill="none" stroke="#e9f1e9" stroke-width="12" opacity=".82"/></g>
+  <path d="M103 119h72M139 83v72" stroke="#77aeb0" stroke-width="5" stroke-linecap="round" opacity=".8"/>
+</svg>

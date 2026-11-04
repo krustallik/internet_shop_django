@@ -6,28 +6,28 @@ from datetime import date
 
 
 class UserRegistrationForm(UserCreationForm):
-    email = forms.EmailField(label='Електронна пошта', required=True,
+    email = forms.EmailField(label='Email address', required=True,
                              widget=forms.EmailInput(
                                  attrs={'placeholder': 'name@example.com', 'class': 'w-full rounded border p-2'}))
-    first_name = forms.CharField(label='Ім’я', required=False,
+    first_name = forms.CharField(label='First name', required=False,
                                  widget=forms.TextInput(
-                                     attrs={'placeholder': 'Ім’я', 'class': 'w-full rounded border p-2'}))
-    last_name = forms.CharField(label='Прізвище', required=False,
+                                     attrs={'placeholder': 'First name', 'class': 'w-full rounded border p-2'}))
+    last_name = forms.CharField(label='Last name', required=False,
                                 widget=forms.TextInput(
-                                    attrs={'placeholder': 'Прізвище', 'class': 'w-full rounded border p-2'}))
+                                    attrs={'placeholder': 'Last name', 'class': 'w-full rounded border p-2'}))
 
-    bio = forms.CharField(label='Біографія', required=False,
-                          widget=forms.Textarea(attrs={'rows': 4, 'placeholder': 'Коротко про себе',
+    bio = forms.CharField(label='About you', required=False,
+                          widget=forms.Textarea(attrs={'rows': 4, 'placeholder': 'A few words about yourself',
                                                        'class': 'w-full rounded border p-2'}))
-    birth_date = forms.DateField(label='Дата народження', required=False,
+    birth_date = forms.DateField(label='Date of birth', required=False,
                                  widget=forms.DateInput(attrs={'type': 'date', 'class': 'w-full rounded border p-2'}))
-    location = forms.CharField(label='Місто', required=False,
+    location = forms.CharField(label='Location', required=False,
                                widget=forms.TextInput(
-                                   attrs={'placeholder': 'Ваше місто', 'class': 'w-full rounded border p-2'}))
-    website = forms.URLField(label='Веб-сайт', required=False,
+                                     attrs={'placeholder': 'City or region', 'class': 'w-full rounded border p-2'}))
+    website = forms.URLField(label='Website', required=False,
                              widget=forms.URLInput(
                                  attrs={'placeholder': 'https://', 'class': 'w-full rounded border p-2'}))
-    avatar = forms.ImageField(label='Аватар', required=False)
+    avatar = forms.ImageField(label='Profile image', required=False)
 
     class Meta(UserCreationForm.Meta):
         model = User
@@ -35,21 +35,21 @@ class UserRegistrationForm(UserCreationForm):
         'username', 'email', 'first_name', 'last_name', 'password1', 'password2', 'bio', 'birth_date', 'location',
         'website', 'avatar')
         widgets = {
-            'username': forms.TextInput(attrs={'placeholder': 'Логін', 'class': 'w-full rounded border p-2'}),
+            'username': forms.TextInput(attrs={'placeholder': 'Username', 'class': 'w-full rounded border p-2'}),
             'password1': forms.PasswordInput(attrs={'class': 'w-full rounded border p-2'}),
             'password2': forms.PasswordInput(attrs={'class': 'w-full rounded border p-2'}),
         }
-        labels = {'username': 'Логін', 'password1': 'Пароль', 'password2': 'Підтвердження пароля'}
+        labels = {'username': 'Username', 'password1': 'Password', 'password2': 'Confirm password'}
         help_texts = {
-            'username': 'Латинські літери, цифри та @/./+/-/_',
-            'password1': 'Використовуйте надійний пароль.',
-            'password2': 'Повторіть пароль.',
+            'username': 'Use letters, digits, and @/./+/-/_ characters.',
+            'password1': 'Choose a strong password.',
+            'password2': 'Enter the same password again.',
         }
 
     def clean_email(self):
         email = self.cleaned_data['email']
         if User.objects.filter(email__iexact=email).exists():
-            raise ValidationError('Такий email вже використовується.')
+            raise ValidationError('An account already uses this email address.')
         return email
 
     def clean_birth_date(self):
@@ -58,17 +58,17 @@ class UserRegistrationForm(UserCreationForm):
             today = date.today()
             age = today.year - bd.year - ((today.month, today.day) < (bd.month, bd.day))
             if age < 13:
-                raise ValidationError('Вік має бути не менше 13 років.')
+                raise ValidationError('You must be at least 13 years old.')
         return bd
 
     def clean_avatar(self):
         avatar = self.cleaned_data.get('avatar')
         if avatar:
             if avatar.size > 5 * 1024 * 1024:
-                raise ValidationError('Максимальний розмір файлу — 5MB.')
+                raise ValidationError('The maximum file size is 5 MB.')
             main, _, sub = (avatar.content_type or 'application/octet-stream').partition('/')
             if main != 'image' or sub.lower() not in ('jpeg', 'jpg', 'png', 'gif'):
-                raise ValidationError('Дозволені формати: JPG, PNG, GIF.')
+                raise ValidationError('Allowed formats are JPG, PNG, and GIF.')
         return avatar
 
     def save(self, commit=True):
@@ -78,7 +78,7 @@ class UserRegistrationForm(UserCreationForm):
         user.last_name = self.cleaned_data.get('last_name', '')
         if commit:
             user.save()
-            p = user.profile  # створений сигналом
+            p = user.profile  # Created by the profile signal.
             p.bio = self.cleaned_data.get('bio', '')
             p.birth_date = self.cleaned_data.get('birth_date')
             p.location = self.cleaned_data.get('location', '')

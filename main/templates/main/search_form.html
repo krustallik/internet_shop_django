@@ -1,12 +1,13 @@
-<form method="get" class="search-form">
-  <input type="text"
-         name="q"
-         placeholder="Пошук по назві, опису або категорії…"
-         value="{{ request.GET.q|default:'' }}">
-  {# зберегти поточне сортування #}
-  {% if request.GET.sort %}
-    <input type="hidden" name="sort" value="{{ request.GET.sort }}">
-  {% endif %}
-  <button class="btn" type="submit">Знайти</button>
-  <a class="btn ghost" href="{% url 'main:product_list' %}">Скинути</a>
+<form method="get" class="search-form" role="search">
+    <label class="sr-only"
+           for="catalog-search">Search products</label><span class="search-icon"
+                                                             aria-hidden="true">⌕</span>
+    <input id="catalog-search"
+           type="search"
+           name="q"
+           placeholder="Search the collection"
+           value="{{ request.GET.q|default:'' }}">
+    {% if request.GET.sort %}<input type="hidden"
+                                    name="sort"
+                                    value="{{ request.GET.sort }}">{% endif %}<button class="button button-dark" type="submit">Search</button>
 </form>

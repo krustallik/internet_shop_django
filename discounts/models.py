@@ -11,8 +11,8 @@ class Discount(models.Model):
     DISCOUNT_TYPE_FIXED = 'fixed'
 
     DISCOUNT_TYPE_CHOICES = (
-        (DISCOUNT_TYPE_PERCENTAGE, 'Відсоток'),
-        (DISCOUNT_TYPE_FIXED, 'Фіксована сума'),
+        (DISCOUNT_TYPE_PERCENTAGE, 'Percentage'),
+        (DISCOUNT_TYPE_FIXED, 'Fixed amount'),
     )
 
     product = models.ForeignKey(
@@ -31,8 +31,8 @@ class Discount(models.Model):
 
     class Meta:
         ordering = ['-created_at']
-        verbose_name = 'Знижка'
-        verbose_name_plural = 'Знижки'
+        verbose_name = 'Discount'
+        verbose_name_plural = 'Discounts'
 
     def __str__(self):
         return f'{self.product} ({self.get_discount_type_display()} {self.value})'
@@ -77,17 +77,17 @@ class Discount(models.Model):
         errors = {}
 
         if self.start_date and self.end_date and self.end_date <= self.start_date:
-            errors['end_date'] = 'Кінець дії має бути пізніше за початок.'
+            errors['end_date'] = 'The end date must be after the start date.'
 
         if self.discount_type == self.DISCOUNT_TYPE_PERCENTAGE:
             if self.value is None or self.value <= 0 or self.value > 100:
-                errors['value'] = 'Відсоткова знижка має бути в діапазоні (0; 100].'
+                errors['value'] = 'Enter a percentage greater than 0 and no more than 100.'
         elif self.discount_type == self.DISCOUNT_TYPE_FIXED:
             if self.value is None or self.value <= 0:
-                errors['value'] = 'Фіксована знижка має бути більшою за 0.'
+                errors['value'] = 'Enter a fixed discount greater than 0.'
 
         if self.min_quantity < 1:
-            errors['min_quantity'] = 'Мінімальна кількість має бути не менше 1.'
+            errors['min_quantity'] = 'Minimum quantity is 1.'
 
         if errors:
             raise ValidationError(errors)
@@ -99,9 +99,9 @@ class PromoCode(models.Model):
     TYPE_FREE_SHIPPING = 'free_shipping'
 
     DISCOUNT_TYPE_CHOICES = (
-        (TYPE_PERCENTAGE, 'Відсоток'),
-        (TYPE_FIXED, 'Фіксована сума'),
-        (TYPE_FREE_SHIPPING, 'Безкоштовна доставка'),
+        (TYPE_PERCENTAGE, 'Percentage'),
+        (TYPE_FIXED, 'Fixed amount'),
+        (TYPE_FREE_SHIPPING, 'Free shipping'),
     )
 
     code = models.CharField(max_length=50, unique=True)
@@ -125,8 +125,8 @@ class PromoCode(models.Model):
 
     class Meta:
         ordering = ['-created_at']
-        verbose_name = 'Промокод'
-        verbose_name_plural = 'Промокоди'
+        verbose_name = 'Promo code'
+        verbose_name_plural = 'Promo codes'
 
     def __str__(self):
         return self.code
@@ -153,7 +153,7 @@ class PromoCode(models.Model):
         elif self.discount_type == self.TYPE_FIXED:
             discount = self.value if self.value < order_amount else order_amount
         elif self.discount_type == self.TYPE_FREE_SHIPPING:
-            # Знижка на доставку рахується окремо; тут 0, але код фіксується.
+            # Shipping discounts require a separate shipping-price calculation.
             discount = Decimal('0.00')
         else:
             discount = Decimal('0.00')
@@ -161,7 +161,7 @@ class PromoCode(models.Model):
         return discount.quantize(Decimal('0.01'))
 
     def increment_usage(self):
-        # Викликати після успішного замовлення
+        # Call after an order is recorded.
         self.used_count += 1
         self.save(update_fields=['used_count'])
 
@@ -171,24 +171,24 @@ class PromoCode(models.Model):
         if self.code:
             new_code = self.code.replace(' ', '').upper()
             if len(new_code) < 4:
-                errors['code'] = 'Код має містити щонайменше 4 символи без пробілів.'
+                errors['code'] = 'Use at least 4 characters without spaces.'
             self.code = new_code
 
         if self.start_date and self.end_date and self.end_date <= self.start_date:
-            errors['end_date'] = 'Кінець дії має бути пізніше за початок.'
+            errors['end_date'] = 'The end date must be after the start date.'
 
         if self.discount_type == self.TYPE_PERCENTAGE:
             if self.value is None or self.value <= 0 or self.value > 100:
-                errors['value'] = 'Для відсотка потрібне значення (0; 100].'
+                errors['value'] = 'Enter a percentage greater than 0 and no more than 100.'
         elif self.discount_type == self.TYPE_FIXED:
             if self.value is None or self.value <= 0:
-                errors['value'] = 'Для фіксованої знижки значення має бути > 0.'
+                errors['value'] = 'Enter a fixed discount greater than 0.'
         elif self.discount_type == self.TYPE_FREE_SHIPPING:
             if self.value is None:
                 self.value = 0
 
         if self.usage_limit is not None and self.usage_limit <= 0:
-            errors['usage_limit'] = 'Ліміт використань має бути більшим за 0.'
+            errors['usage_limit'] = 'Usage limit must be greater than 0.'
 
         if errors:
             raise ValidationError(errors)
@@ -211,8 +211,8 @@ class PromoCodeUsage(models.Model):
 
     class Meta:
         ordering = ['-used_at']
-        verbose_name = 'Використання промокоду'
-        verbose_name_plural = 'Використання промокодів'
+        verbose_name = 'Promo code usage'
+        verbose_name_plural = 'Promo code usage'
 
     def __str__(self):
         return f'{self.promo_code.code} - {self.user} ({self.used_at})'

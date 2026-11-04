@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+.venv/
+venv/
+.env
+*.sqlite3
+*.log
+
+# Django local state
+*.sqlite3-journal
+local_settings.py
+staticfiles/
+
+# User uploads stay local; keep only the synthetic demo catalog assets.
+/media/*
+!/media/demo/
+!/media/demo/**

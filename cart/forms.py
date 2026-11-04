@@ -10,7 +10,7 @@ class CartAddProductForm(forms.Form):
             'class': 'p-3 border-2 border-gray-400 rounded-lg w-20 text-center font-bold',
             'placeholder': '1',
         }),
-        label='Кількість',
+        label='Quantity',
     )
     override = forms.BooleanField(
         required=False,

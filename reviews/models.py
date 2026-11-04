@@ -17,12 +17,12 @@ class Review(models.Model):
     helpful_count = models.IntegerField(default=0)
 
     class Meta:
-        unique_together = ['product', 'author']  # один користувач — один відгук на товар
+        unique_together = ['product', 'author']  # One review per user and product.
         ordering = ['-created_at']
 
     def __str__(self):
         return f'{self.product} — {self.author} ({self.rating}/5)'
 
     def get_rating_display_stars(self) -> str:
-        # Юнікод-зірочки для виводу в шаблонах
+        # Unicode stars for the storefront.
         return '★' * int(self.rating) + '☆' * (5 - int(self.rating))

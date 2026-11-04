@@ -58,7 +58,7 @@ def product_detail(request, id, slug):
     categories = Category.objects.filter(is_active=True).order_by("name")
     product = get_object_or_404(Product, id=id, slug=slug, is_available=True)
 
-    # +1 перегляд (атомарно)
+    # Increment the product's view count atomically.
     Product.objects.filter(pk=product.pk).update(views=F("views") + 1)
     product.refresh_from_db(fields=["views"])
 
@@ -68,7 +68,7 @@ def product_detail(request, id, slug):
         .order_by("-created_at")[:4]
     )
 
-    # дані для блоку відгуків
+    # Prepare the review data for the detail page.
     reviews_qs = product.reviews.filter(is_active=True).select_related('author')
 
     ctx = {
@@ -87,8 +87,5 @@ def product_detail(request, id, slug):
 
     cart_product_form = CartAddProductForm()
 
-    return render(request, 'main/product_detail.html', {
-        'product': product,
-        'related_products': related_products,
-        'cart_product_form': cart_product_form,
-    })
+    ctx["cart_product_form"] = cart_product_form
+    return render(request, "main/product_detail.html", ctx)

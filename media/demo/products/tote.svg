@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 560" role="img" aria-labelledby="title desc">
+  <title id="title">Everyday canvas tote</title><desc id="desc">A structured ochre canvas bag on a pale peach background.</desc>
+  <defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#f4e4d7"/><stop offset="1" stop-color="#e9c9ae"/></linearGradient><filter id="shadow" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="22" stdDeviation="17" flood-color="#804f37" flood-opacity=".18"/></filter></defs>
+  <rect width="720" height="560" rx="32" fill="url(#bg)"/><circle cx="155" cy="116" r="73" fill="#fff8ed" opacity=".6"/><ellipse cx="361" cy="442" rx="154" ry="22" fill="#9b674c" opacity=".15"/>
+  <g filter="url(#shadow)"><path d="M276 239v-37a84 84 0 0 1 168 0v37" fill="none" stroke="#2d5e56" stroke-width="18"/><path d="M230 228h260l-25 195a27 27 0 0 1-27 24H282a27 27 0 0 1-27-24z" fill="#d5a85c"/><path d="M254 254h212l-17 160H271z" fill="#e3bc75"/><path d="M286 281h148" stroke="#9b7948" stroke-width="5" opacity=".42"/><path d="M344 331h42v44h-42z" rx="8" fill="#2d5e56"/><circle cx="365" cy="353" r="8" fill="#e3bc75"/></g>
+</svg>

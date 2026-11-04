@@ -2,10 +2,10 @@ from decimal import Decimal
 
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from django.http import JsonResponse, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_POST
 
 from main.models import Product
 from .forms import DiscountForm, PromoCodeForm, ApplyPromoCodeForm
@@ -41,7 +41,7 @@ def add_discount(request, product_id):
             discount = form.save(commit=False)
             discount.product = product
             discount.save()
-            messages.success(request, 'Знижку створено.')
+            messages.success(request, 'Discount created.')
             return redirect('main:product_detail', id=product.id, slug=product.slug)
     else:
         form = DiscountForm()
@@ -61,7 +61,7 @@ def edit_discount(request, discount_id):
         form = DiscountForm(request.POST, instance=discount)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Знижку оновлено.')
+            messages.success(request, 'Discount updated.')
             return redirect('main:product_detail', id=product.id, slug=product.slug)
     else:
         form = DiscountForm(instance=discount)
@@ -78,7 +78,7 @@ def delete_discount(request, discount_id):
     discount = get_object_or_404(Discount, id=discount_id)
     product = discount.product
     discount.delete()
-    messages.success(request, 'Знижку видалено.')
+    messages.success(request, 'Discount deleted.')
     return redirect('main:product_detail', id=product.id, slug=product.slug)
 
 
@@ -91,7 +91,7 @@ def create_promo_code(request):
             if not promo.created_by:
                 promo.created_by = request.user
             promo.save()
-            messages.success(request, 'Промокод створено.')
+            messages.success(request, 'Promo code created.')
             return redirect('discounts:promo_code_list')
     else:
         form = PromoCodeForm()
@@ -121,10 +121,9 @@ def promo_code_list(request):
     })
 
 
-@login_required
 def apply_promo_code(request):
     if request.method != 'POST':
-        return HttpResponseForbidden('Тільки POST')
+        return HttpResponseForbidden('POST requests only.')
 
     form = ApplyPromoCodeForm(request.POST)
     if not form.is_valid():
@@ -138,7 +137,7 @@ def apply_promo_code(request):
     code = form.cleaned_data['promo_code']
     promo = get_object_or_404(PromoCode, code=code)
 
-    # 1) якщо є order_amount з форми — беремо його
+    # Prefer the amount supplied by the bag form.
     raw_amount = request.POST.get('order_amount')
 
     if raw_amount is not None:
@@ -147,20 +146,20 @@ def apply_promo_code(request):
         except Exception:
             order_amount = Decimal('0')
     else:
-        # 2) інакше вважаємо, що це кошик
+        # Otherwise calculate the current session bag total.
         cart = Cart(request)
         order_amount = cart.get_total_price()
 
     discount_amount = promo.apply_discount(order_amount)
 
     if discount_amount <= 0:
-        msg = 'Промокод не може бути застосований до цієї суми замовлення.'
+        msg = 'This promo code cannot be applied to the current order total.'
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return JsonResponse({'success': False, 'message': msg}, status=400)
         messages.error(request, msg)
         return redirect(request.META.get('HTTP_REFERER', '/'))
 
-    # зберігаємо код у сесії, суму можемо перераховувати динамічно в кошику
+    # Store the code; the bag recalculates its discount against the current total.
     request.session['promo_code'] = promo.code
 
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
@@ -171,10 +170,11 @@ def apply_promo_code(request):
             'new_total': str(order_amount - discount_amount),
         })
 
-    messages.success(request, f'Промокод {promo.code} застосовано.')
+    messages.success(request, f'Promo code {promo.code} applied.')
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
 
+@require_POST
 def remove_promo_code(request):
     request.session.pop('promo_code', None)
     request.session.pop('promo_discount', None)
@@ -182,7 +182,7 @@ def remove_promo_code(request):
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return JsonResponse({'success': True})
 
-    messages.success(request, 'Промокод видалено.')
+    messages.success(request, 'Promo code removed.')
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
 

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 560" role="img" aria-labelledby="title desc">
+  <title id="title">Desktop organizer tray</title><desc id="desc">A sculpted green desk tray with a small brass catchall.</desc>
+  <defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#e1ece2"/><stop offset="1" stop-color="#c8ddcf"/></linearGradient><filter id="shadow" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="22" stdDeviation="17" flood-color="#345742" flood-opacity=".18"/></filter></defs>
+  <rect width="720" height="560" rx="32" fill="url(#bg)"/><circle cx="164" cy="116" r="80" fill="#fbf8eb" opacity=".58"/><ellipse cx="360" cy="437" rx="190" ry="23" fill="#44644d" opacity=".16"/>
+  <g filter="url(#shadow)"><path d="M190 250h340l-35 152a28 28 0 0 1-27 21H252a28 28 0 0 1-27-21z" fill="#547a62"/><path d="M218 276h285l-23 112H244z" fill="#75977c"/><path d="M260 296h132v60H260z" rx="16" fill="#d8ad5b"/><path d="M409 299h62v83h-62z" rx="10" fill="#e8e0c9"/><circle cx="435" cy="340" r="11" fill="#73917b"/><path d="M247 265h232" stroke="#a4bd9f" stroke-width="8" stroke-linecap="round"/></g>
+</svg>

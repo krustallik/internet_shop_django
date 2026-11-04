@@ -5,7 +5,7 @@ register = template.Library()
 
 @register.simple_tag
 def get_products_count(category=None):
-    """Кількість доступних товарів (опц. у категорії)."""
+    """Count available products, optionally within a category."""
     qs = Product.objects.filter(is_available=True)
     if category:
         qs = qs.filter(category=category)
@@ -13,7 +13,7 @@ def get_products_count(category=None):
 
 @register.simple_tag
 def calculate_total(price, quantity):
-    """Обчислює загальну вартість."""
+    """Calculate a simple price-by-quantity total."""
     try:
         return float(price) * int(quantity)
     except (ValueError, TypeError):
@@ -21,14 +21,14 @@ def calculate_total(price, quantity):
 
 @register.simple_tag(takes_context=True)
 def user_greeting(context):
-    """Привітання користувача з контексту."""
+    """Return a short English greeting for the current user."""
     user = context.get("user")
     if user and user.is_authenticated:
-        return f"Вітаємо, {user.username}!"
-    return "Вітаємо, гість!"
+        return f"Welcome, {user.username}!"
+    return "Welcome, guest!"
 
-# Inclusion-tag: показ картки товару, використовує існуючий компонент
+# Inclusion tag for a shared product card.
 @register.inclusion_tag("main/components/product_card.html")
 def show_product_card(p):
-    """Відображає картку товару (передає 'p' у компонент)."""
+    """Render the shared product card component."""
     return {"p": p}

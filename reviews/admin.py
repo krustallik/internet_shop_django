@@ -9,12 +9,11 @@ class ReviewAdmin(admin.ModelAdmin):
     readonly_fields = ('created_at', 'updated_at')
     list_editable = ('is_active',)
     fieldsets = (
-        ('Звʼязки', {'fields': ('product', 'author')}),
-        ('Зміст', {'fields': ('rating', 'title', 'content', 'advantages', 'disadvantages')}),
-        ('Стан', {'fields': ('is_active', 'helpful_count', 'created_at', 'updated_at')}),
+        ('Review details', {'fields': ('product', 'author', 'rating', 'title', 'content', 'advantages', 'disadvantages')}),
+        ('Status', {'fields': ('is_active', 'helpful_count', 'created_at', 'updated_at')}),
     )
 
-    @admin.display(description='Заголовок')
+    @admin.display(description='Title')
     def title_preview(self, obj):
         return (obj.title[:50] + '…') if len(obj.title) > 50 else obj.title
 
@@ -22,8 +21,8 @@ class ReviewAdmin(admin.ModelAdmin):
 
     def activate_reviews(self, request, queryset):
         queryset.update(is_active=True)
-    activate_reviews.short_description = 'Активувати вибрані відгуки'
+    activate_reviews.short_description = 'Activate selected reviews'
 
     def deactivate_reviews(self, request, queryset):
         queryset.update(is_active=False)
-    deactivate_reviews.short_description = 'Деактивувати вибрані відгуки'
+    deactivate_reviews.short_description = 'Deactivate selected reviews'

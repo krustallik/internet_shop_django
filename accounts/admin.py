@@ -16,7 +16,7 @@ class UserAdmin(BaseUserAdmin):
     search_fields = ('username','email','profile__location')
     def get_location(self, obj):
         return getattr(obj.profile, 'location', '')
-    get_location.short_description = 'Місто'
+    get_location.short_description = 'Location'
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
@@ -24,14 +24,14 @@ class ProfileAdmin(admin.ModelAdmin):
     list_filter = ('created_at','updated_at')
     search_fields = ('user__username','user__email','location','bio')
     fieldsets = (
-        ('Користувач', {'fields': ('user',)}),
-        ('Основна інформація', {'fields': ('avatar','bio','birth_date','location','website')}),
-        ('Системна інформація', {'fields': ('created_at','updated_at'), 'classes': ('collapse',)}),
+        ('User', {'fields': ('user',)}),
+        ('Profile details', {'fields': ('avatar','bio','birth_date','location','website')}),
+        ('System information', {'fields': ('created_at','updated_at'), 'classes': ('collapse',)}),
     )
     readonly_fields = ('created_at','updated_at')
     def has_avatar(self, obj): return bool(obj.avatar)
     has_avatar.boolean = True
-    has_avatar.short_description = 'Аватар'
+    has_avatar.short_description = 'Profile image'
 
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)

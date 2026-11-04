@@ -5,7 +5,7 @@ register = template.Library()
 
 @register.filter(name="currency")
 def format_currency(value, currency="₴"):
-    """Форматує число як ціну з валютою."""
+    """Format a number as a price with the selected currency symbol."""
     try:
         return f"{float(value):.2f} {currency}"
     except (ValueError, TypeError):
@@ -13,7 +13,7 @@ def format_currency(value, currency="₴"):
 
 @register.filter
 def discount_percentage(original_price, discount_price):
-    """Відсоток знижки (якщо треба)."""
+    """Return the percentage difference between two prices."""
     try:
         original = float(original_price)
         discount = float(discount_price)
@@ -38,18 +38,18 @@ def compact_number(value):
 
 @register.filter
 def time_ago(date):
-    """Людинозрозумілий 'час тому'."""
+    """Return a compact English relative timestamp."""
     if not date:
         return ""
     now = timezone.now()
     diff = now - date
     s = diff.total_seconds()
     if s < 60:
-        return "щойно"
+        return "just now"
     if s < 3600:
-        return f"{int(s/60)} хв тому"
+        return f"{int(s/60)} min ago"
     if s < 86400:
-        return f"{int(s/3600)} год тому"
+        return f"{int(s/3600)} hr ago"
     if s < 604800:
-        return f"{int(s/86400)} дн тому"
-    return date.strftime("%d.%m.%Y")
+        return f"{int(s/86400)} days ago"
+    return date.strftime("%b %d, %Y")

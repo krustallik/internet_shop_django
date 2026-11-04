@@ -53,7 +53,7 @@ def cart_detail(request):
             if promo_discount > 0:
                 final_total = cart_total - promo_discount
             else:
-                # якщо вже не валідний — прибираємо
+                # Remove a promo code that is no longer valid.
                 request.session.pop('promo_code', None)
                 promo_code = None
         except PromoCode.DoesNotExist:
